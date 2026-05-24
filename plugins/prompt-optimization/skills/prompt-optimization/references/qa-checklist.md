@@ -24,7 +24,7 @@ Track: [Full / Express — selected at Phase 0.5]
 | Phase 0.5 | Track selected against published criteria; surfaced to user | PASS / FAIL — [details if fail] |
 | Phase 1 | All widget selections addressed | PASS / FAIL — [details if fail] |
 | Phase 1.5 | Calibration delta reflected; no stale patterns; model-version currency confirmed | PASS / FAIL — [details if fail] |
-| Phase 2 | Landscape research findings incorporated | PASS / FAIL / N/A — Express track |
+| Phase 2 | Landscape research findings incorporated (mode: 2-S / 2-O) | PASS / FAIL / N/A — Express track |
 | Phase 2.5 | Research-informed selections addressed | PASS / FAIL / N/A |
 | Phase 3-4 | Draft analysis issues resolved | PASS / FAIL |
 | Phase 5 | Delta analysis accurate and complete | PASS / FAIL |
@@ -47,7 +47,9 @@ Quick reference for the numeric gates used throughout this checklist. Per-phase 
 | Phase 1.5 calibration freshness (High confidence) | ≤30 days old | Phase 1.5 confidence calibration |
 | Phase 2 query-taxonomy rows minimum | 5 of 8 | Phase 2 (2B.1) |
 | Phase 2 source-type categories minimum | 3 of 5 | Phase 2 (2B.2) |
-| Phase 2 search-count hard cap | 12 total | Phase 2 (2B.3) |
+| Phase 2 search-count hard cap (2-S only) | 12 total | Phase 2 (2B.3) |
+| Phase 2-O subagent lanes (2-O only) | ≤ 6 | landscape-research.md § Phase 2 execution modes |
+| Phase 2-O search budget (2-O only) | per-lane; no global cap | landscape-research.md § Phase 2 execution modes |
 | Phase 2.5 research-informed questions | 5–10 | Phase 2.5 |
 | Phase 2.5 questions per widget batch | ≤3 | Phase 2.5 batching |
 
@@ -79,7 +81,7 @@ Pass requires **all** of:
 
 - [ ] A track (Full or Express) was selected against the published Phase 0.5 criteria — not by unstated discretion.
 - [ ] The track decision and its one-sentence reason were surfaced to the user in the Phase 0 restatement prose.
-- [ ] Express track was selected only when the draft met **all** Express criteria (mechanical / self-contained, under ~200 words with a complete spec, no landscape research would change the output). Any unmet criterion means Full track.
+- [ ] Express track was selected only when the draft met **all** Express criteria (mechanical / self-contained, under ~150 words with a complete spec, no landscape research would change the output). Any unmet criterion means Full track.
 - [ ] Boundary or conflicting cases defaulted to Full track.
 - [ ] If the user overrode the track, the override was honored per the rule (override to Full always honored; override to Express honored only if no factual/research Full-track criterion applies).
 - [ ] The selected track's sequence was then followed without further phase skipping.
@@ -124,19 +126,29 @@ Pass requires **all** of:
 
 Pass requires **all** of (applicable only when Phase 2 ran — Full track with a non-mechanical draft; on the Express track Phase 2 is `N/A — Express track`, and on the Full track for a mechanical draft the skip flag must be set explicitly):
 
+- [ ] Execution mode (2-S single-threaded or 2-O orchestrated fan-out) was selected on the published objective criteria (Agent/Task tool availability + draft depth), and the mode + one-line rationale is recorded in the chat run sheet and the Phase 5 delta.
 - [ ] Step 2A produced the Topic Identification & Draft Deconstruction artifact with all four sub-sections (topical content, implicit framing, stakeholder map, contested terminology).
 - [ ] Step 2A's stakeholder map names a third-cell "affected but underrepresented" entry — even if it required guessing.
 - [ ] Step 2B's query taxonomy ran searches across at least 5 of the 8 taxonomy rows, with skipped rows explicitly justified.
 - [ ] Step 2B's source corpus represents at least 3 of the 5 source-type categories.
 - [ ] Step 2B' adversarial pass ran (unless explicitly skipped with a one-sentence "no implicit thesis" justification for a purely mechanical / descriptive draft).
 - [ ] Step 2B' searches against the dissenting framing ran at comparable count to Step 2B's initial searches (parity, not a single token mention).
-- [ ] Total Phase 2 search count did not exceed 12 (the 2B.3 hard cap).
+- [ ] **Mode-scoped search budget:** in **2-S**, total Phase 2 search count did not exceed 12 (the 2B.3 hard cap); in **2-O**, no global cap applies — instead ≤ 6 subagent lanes, each within its per-lane search budget, and at most one remediation pass.
 - [ ] Step 2C synthesis is structured per the artifact template (Major Sub-Domains, Frameworks, Areas of Debate, Temporal, Edge Cases, Coverage Gaps).
 - [ ] Every item in every category has a Confidence stamp.
 - [ ] Step 2D neutrality check passed: no embedded conclusions, topics not positions, debates not winners.
 - [ ] Step 2D' coverage-bias check passed for every applicable axis (geography, language, time horizon, stakeholder voice, source type, discipline); inapplicable axes are marked `N/A — [reason]`.
 - [ ] Gaps flagged by 2D' were either closed by a single targeted-search iteration or documented as deferred clarifications in Phase 5 delta.
 - [ ] Phase 2 working artifacts (2A block, 2B log, 2C synthesis, 2D' check) are confirmed to be internal-only — they appear in the chat run sheet, never in the prompt body or the written file.
+
+**When Phase 2 ran in 2-O (orchestrated fan-out), additionally:**
+
+- [ ] Step 2A ran in the orchestrator and was passed to every subagent as the shared-constant artifact (not re-derived per lane).
+- [ ] Decomposition used a Phase-2-native axis (sub-domain / source-type / query-taxonomy cluster), with ≤ 6 subagent lanes.
+- [ ] A dedicated adversarial-pass lane was dispatched (the 2B' equivalent, searched at parity within its own budget).
+- [ ] 2C synthesis and the 2D / 2D' gates ran on the **aggregate cross-lane corpus** — not per lane. The 3-of-5 source-type floor is verified across the full corpus.
+- [ ] At most one remediation pass fired; a second remediation would mean re-decomposing at 2A.
+- [ ] Subagent briefs, the dispatch graph, and per-lane findings packs are confirmed internal-only (partition holds identically in 2-O).
 
 ## Phase 2.5 — Research-Informed Clarification
 
@@ -187,7 +199,7 @@ Pass requires **all** of:
 
 - [ ] Key changes are bulleted with rationale.
 - [ ] Calibration-driven changes are stated explicitly (or "baseline confirmed current" when sweep was clean).
-- [ ] Landscape-driven additions reference Phase 2 findings that landed in the prompt.
+- [ ] Landscape-driven additions reference Phase 2 findings that landed in the prompt. When Phase 2 ran in 2-O, the delta names the execution mode, the subagent lanes dispatched, and whether a remediation pass fired.
 - [ ] Clarification-driven refinements reference Phase 1 / 2.5 widget selections that shaped the prompt, including "Other (I'll specify)" integrations.
 - [ ] Deferred Phase 2.5 questions are listed with the assumptions made on their behalf.
 - [ ] Neutrality attestation is included — explicit statement that no pre-judged conclusions are embedded.

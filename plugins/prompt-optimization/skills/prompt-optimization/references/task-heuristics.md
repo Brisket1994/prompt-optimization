@@ -93,7 +93,7 @@ Per-section task-type guidance below assumes this rule and does not restate it.
 **Opus 4.7-specific enhancements.**
 
 - Instruct web search use directly when the task obviously needs current data. Adaptive thinking will choose when to invoke; you don't need to write a manual tool allowlist.
-- For multi-source research, surface the source-type diversity requirement (Phase 2.2's 3-of-5 categories) in the optimized prompt: "Cover primary documents, expert commentary, practitioner press, mainstream press, and dissenting press where each is available."
+- For multi-source research, surface the source-type diversity requirement (Step 2B.2's 3-of-5 categories) in the optimized prompt: "Cover primary documents, expert commentary, practitioner press, mainstream press, and dissenting press where each is available."
 - For research that benefits from independent perspectives, consider whether the task is actually orchestrated-research — fan out → synthesize is what subagents are for.
 - The 1M context is GA — research that needs to ingest hundreds of pages of source material can do so in one window.
 

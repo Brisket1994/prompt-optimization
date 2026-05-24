@@ -4,7 +4,14 @@ A single-plugin [Claude Code](https://docs.claude.com/en/docs/claude-code/overvi
 
 ## Install
 
-From within Claude Code:
+### Claude Code (CLI)
+
+```bash
+claude plugin marketplace add ZaBrisket/prompt-optimization
+claude plugin install prompt-optimization@prompt-optimization
+```
+
+Or, from within an interactive Claude Code session:
 
 ```
 /plugin marketplace add ZaBrisket/prompt-optimization
@@ -12,6 +19,18 @@ From within Claude Code:
 ```
 
 The first command registers this repo as a marketplace; the second installs the plugin from it (`<plugin>@<marketplace>`). Restart Claude Code if prompted so the new skill, command, and agent load.
+
+### Cowork (Desktop)
+
+1. In the Cowork desktop app, open the **Customize** menu and add this repo (`ZaBrisket/prompt-optimization`) as a marketplace.
+2. Install **prompt-optimization** from the marketplace.
+
+### Local development
+
+```bash
+claude plugin marketplace add /path/to/this/repo
+claude plugin install prompt-optimization@prompt-optimization
+```
 
 ## What you get
 
@@ -27,6 +46,7 @@ When the Agent/Task tool is available and a draft is multi-sub-domain, multi-sta
 
 ```
 .
+├── README.md                                # this file
 ├── .claude-plugin/marketplace.json          # marketplace definition
 └── plugins/
     └── prompt-optimization/

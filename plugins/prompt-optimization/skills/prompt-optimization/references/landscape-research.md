@@ -196,20 +196,20 @@ The 2B.1 minimum-5-rows floor and the 2B.2 3-of-5 categories requirement are str
 - Then continue searching against any 2D' coverage axis that remains gapped AND is relevant to the task type.
 - Stop when every applicable 2D' axis is either closed or explicitly marked N/A with reason.
 
-**Hard cap.** Total Phase 2 search count (combined 2B + 2B' + any iteration extension from 2B's iteration check) is capped at 12 searches as a rabbit-hole guard. If the cap is reached before coverage closes, do not continue searching — document the unclosed axes in Phase 5 delta as deferred clarifications and proceed to 2C synthesis with the corpus you have.
+**Hard cap (2-S).** In single-threaded mode, total Phase 2 search count (combined 2B + 2B' + any iteration extension from 2B's iteration check) is capped at 12 searches as a rabbit-hole guard. If the cap is reached before coverage closes, do not continue searching — document the unclosed axes in Phase 5 delta as deferred clarifications and proceed to 2C synthesis with the corpus you have. (In 2-O this 12-search cap does not apply; depth is bounded instead by ≤ 6 subagent lanes, per-lane search budgets, and at most one remediation pass — see § Phase 2 execution modes.)
 
 **Practical floor for typical analytical prompts.** The two structural minimums together imply a practical floor around 6–7 searches for non-mechanical Phase 2 invocations. Coverage-driven termination below that floor is unlikely except for narrow, well-bounded analytical questions where 2D' axes are largely N/A.
 
 ### Search budget allocation
 
-The 12-search hard cap from 2B.3 maps to the work as follows:
+In single-threaded mode (2-S), the 12-search hard cap from 2B.3 maps to the work as follows (in 2-O these searches are distributed across per-lane budgets instead, with no global cap):
 
 | Component | Searches | Notes |
 |-----------|----------|-------|
 | 2B mandatory floor | 5–6 | One per query-taxonomy row covered, minimum 5 rows |
 | 2B' adversarial parity | comparable to 2B, ceiling 5 | Parity not strict equality; "comparable count" per the 2B' spec |
 | Iteration extension (2B' iteration check) | 1–3 | Triggered only by a material sub-domain surfaced during 2B + 2B' |
-| **Total hard cap** | **12** | Rabbit-hole guard from 2B.3 |
+| **Total hard cap (2-S)** | **12** | Rabbit-hole guard from 2B.3 |
 
 When 2B + 2B' alone consume 11–12 searches, skip the iteration extension and document any unexplored thread in the Phase 5 delta as a deferred clarification (per the existing rabbit-hole guard rule).
 
@@ -346,9 +346,9 @@ COVERAGE-BIAS CHECK
 ```
 
 **Remediation rule.** If any axis is gapped AND relevant to the task type AND material to the prompt's scope:
-- Return to 2B or 2B' for one targeted-search iteration to close the gap (preferred; cheap)
+- Return to 2B or 2B' for one targeted-search iteration to close the gap (preferred; cheap). In 2-O, this is the single remediation lane (capped at one).
 - Cap at one such extension to prevent rabbit-holing
-- If the 2B.3 hard cap of 12 total Phase 2 searches has already been reached, document the unclosed axis as a deferred clarification in Phase 5 delta and proceed
+- If the 2B.3 single-threaded hard cap of 12 total Phase 2 searches has already been reached (2-S), document the unclosed axis as a deferred clarification in Phase 5 delta and proceed. In 2-O, if the one remediation pass has already fired, do the same rather than dispatching a second.
 
 **Gate logic.** 2D and 2D' are parallel verification gates. 2D handles position bias (findings becoming conclusions). 2D' handles coverage bias (narrow inputs producing technically-neutral but actually-biased synthesis). Both must pass before proceeding to Phase 2.5. Failing either returns Phase 2 to remediation; passing both proceeds.
 
