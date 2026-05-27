@@ -306,9 +306,9 @@ Phase 3 cites this section by exact heading — keep the heading verbatim. The t
 
 Accessed 2026-05-20:
 
-- [Migrating to Claude Opus 4.7 — Claude API Docs](https://docs.anthropic.com/en/docs/about-claude/models/migrating-to-claude-4) — every deprecation in rows 2–6 and 19; behavioral changes in rows 7–18 and 20.
-- [Building with extended thinking — Claude API Docs](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking) — adaptive-thinking syntax and the manual-thinking 400 error.
-- [Model configuration — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/model-config) — `xhigh` ladder rung; `xhigh` as Opus 4.7 default effort.
-- [Create custom subagents — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/sub-agents) — subagent definition surface, `CLAUDE_CODE_SUBAGENT_MODEL` env var, parallel-dispatch shape (informs row 10).
+- [Migrating to Claude Opus 4.7 — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models/migration-guide) — every deprecation in rows 2–6 and 19; behavioral changes in rows 7–18 and 20.
+- [Building with extended thinking — Claude API Docs](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) — adaptive-thinking syntax and the manual-thinking 400 error.
+- [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — `xhigh` ladder rung; `xhigh` as Opus 4.7 default effort.
+- [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents) — subagent definition surface, `CLAUDE_CODE_SUBAGENT_MODEL` env var, parallel-dispatch shape (informs row 10).
 - [Introducing Claude Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7) — high-resolution image support (row 19), real-time cybersecurity safeguards (row 20).
 - `SKILL.md` Meta-Rules 6, 7, 10, 11, 13, 14 — anchors for the style and orchestrator anti-pattern rows.

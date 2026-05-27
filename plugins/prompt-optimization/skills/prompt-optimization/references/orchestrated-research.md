@@ -1,5 +1,7 @@
 # Orchestrated Multi-Agent Research — Complete Operational Guide
 
+> **Calibration stamp:** Product facts in this reference (subagent constraints, environment-variable behavior, dispatch model) verified against authoritative Anthropic documentation on **2026-05-20**. Re-verify on every skill run via Phase 1.5.
+
 This reference is the full operational manual for the `orchestrated-research` task type. It covers decomposition, subagent prompt construction, dependency management, output scope calibration, synthesis design, the remediation pattern, environment configuration, the orchestrator `CLAUDE.md` template (Section 10), and the failure mode catalog. Phase 4 of `SKILL.md` cites **Section 10** by number when producing the orchestrator deliverable — that section's heading and content are load-bearing; do not move them.
 
 ## Table of contents
@@ -342,7 +344,7 @@ The patterns below are the ways orchestrated research most commonly degrades. Ea
 
 Accessed 2026-05-20:
 
-- [Create custom subagents — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/sub-agents) — subagent definition surface, frontmatter fields, context isolation, the constraint that subagents cannot spawn other subagents.
-- [Model configuration — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/model-config) — `CLAUDE_CODE_SUBAGENT_MODEL` env var precedence, 1M context routing via `[1m]` suffix, default effort `xhigh` on Opus 4.7.
-- [Migrating to Claude Opus 4.7 — Claude API Docs](https://docs.anthropic.com/en/docs/about-claude/models/migrating-to-claude-4) — "Fewer subagents spawned by default" behavioral change (informs Section 1 and Section 11).
+- [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents) — subagent definition surface, frontmatter fields, context isolation, the constraint that subagents cannot spawn other subagents.
+- [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — `CLAUDE_CODE_SUBAGENT_MODEL` env var precedence, 1M context routing via `[1m]` suffix, default effort `xhigh` on Opus 4.7.
+- [Migrating to Claude Opus 4.7 — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models/migration-guide) — "Fewer subagents spawned by default" behavioral change (informs Section 1 and Section 11).
 - `SKILL.md` Meta-Rule 13 — anchor for the unverified-numeric-estimate rule and the orchestrator-dispatch instruction.

@@ -113,10 +113,10 @@ Two of Phase 1.5's four mandatory queries (Query 1 and Query 3) are platform-sco
 
 Accessed 2026-05-20:
 
-- [Models overview — Claude API Docs](https://docs.anthropic.com/en/docs/about-claude/models) — model availability across surfaces and pricing.
-- [Model configuration — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/model-config) — Claude Code aliases, 1M-context routing, env vars including `CLAUDE_CODE_SUBAGENT_MODEL`.
-- [Create custom subagents — Claude Code Docs](https://docs.claude.com/en/docs/claude-code/sub-agents) — built-in subagents (Explore / Plan / general-purpose), subagent scopes (`.claude/agents/`, `~/.claude/agents/`, plugins, managed), `--agents` CLI flag.
+- [Models overview — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models) — model availability across surfaces and pricing.
+- [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — Claude Code aliases, 1M-context routing, env vars including `CLAUDE_CODE_SUBAGENT_MODEL`.
+- [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents) — built-in subagents (Explore / Plan / general-purpose), subagent scopes (`.claude/agents/`, `~/.claude/agents/`, plugins, managed), `--agents` CLI flag.
 - [Claude Platform](https://www.anthropic.com/api) — API product surface.
 - [Claude Code by Anthropic](https://www.anthropic.com/claude-code) — CLI product surface.
 - [Claude Cowork](https://www.anthropic.com/product/claude-cowork) — Cowork product surface and tier eligibility.
-- [Migration guide — Claude API Docs](https://docs.anthropic.com/en/docs/about-claude/models/migrating-to-claude-4) — Opus 4.7 capabilities carrying forward from 4.6 (Files API, MCP connector, batch, vision, web tools, memory tool).
+- [Migration guide — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models/migration-guide) — Opus 4.7 capabilities carrying forward from 4.6 (Files API, MCP connector, batch, vision, web tools, memory tool).

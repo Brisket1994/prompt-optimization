@@ -1,6 +1,6 @@
 # prompt-optimization
 
-A single-plugin [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Opus 4.7.
+A single-plugin [Claude Code](https://code.claude.com/docs/en/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Opus 4.7.
 
 ## Install
 
