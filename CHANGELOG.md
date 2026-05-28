@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-05-28
+
+UX cleanup. The plugin previously shipped both a `prompt-optimization` skill and an `/optimize-prompt` slash command that wrapped the skill — for first-time users this surfaced as two near-identical entries in the skills menu, with the most plugin-name-shaped invocation actually being the wrong one (the command took args; the skill is the methodology). Consolidating to one entry point.
+
+### Removed
+- `commands/optimize-prompt.md` and the `commands/` directory. The slash command is gone.
+
+### Changed
+- The skill `prompt-optimization` is now the single invocation surface. Auto-triggers on prompt-improvement intent (paste a draft and say "optimize this", "harden this CLAUDE.md", "refine this system message"); invoke explicitly with `/prompt-optimization` when the auto-trigger doesn't fire or to start cold.
+- File-driven workflows: type `/prompt-optimization` and paste the path when the skill's Phase 0 asks for the draft — one extra exchange vs. the prior `/optimize-prompt <path>` inline-arg shortcut, in exchange for a clean single-entry menu.
+- Plugin description and READMEs updated to reflect the single-invocation surface.
+
+### Migration
+No migration required for the underlying methodology — the protocol, Standing Environment Assumptions, Deliverable Contract, references, and worker agents are unchanged from 0.2.0. Anyone who had built muscle memory around `/optimize-prompt` switches to `/prompt-optimization` (or just pastes the draft and lets the auto-trigger fire).
+
 ## [0.2.0] — 2026-05-28
 
 Synthesis-as-owner: every orchestrated-research deliverable the skill produces now leads with an executive summary, runs a load-bearing source-validation revisit pass, and ships an always-on devil's-advocate / confirmatory subagent under a verdict-ladder discipline. Non-orchestrated tracks and the Express track are untouched.
@@ -61,6 +76,7 @@ Synthesis-as-owner: every orchestrated-research deliverable the skill produces n
 - Orchestrated Phase 2 landscape-research mode (2-O) with full propagation into the
   QA layer.
 
+[0.2.1]: https://github.com/ZaBrisket/prompt-optimization/releases/tag/v0.2.1
 [0.2.0]: https://github.com/ZaBrisket/prompt-optimization/releases/tag/v0.2.0
 [0.1.1]: https://github.com/ZaBrisket/prompt-optimization/releases/tag/v0.1.1
 [0.1.0]: https://github.com/ZaBrisket/prompt-optimization/releases/tag/v0.1.0

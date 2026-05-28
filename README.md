@@ -34,9 +34,9 @@ claude plugin install prompt-optimization@prompt-optimization
 
 ## What you get
 
-- **Skill — `prompt-optimization`** — auto-triggers when you provide a draft prompt to improve, ask to optimize/harden/refine a prompt, or describe a multi-agent research workflow. Runs a sequential protocol: intent extraction, complexity triage, widget-based clarification, mandatory live calibration against Anthropic documentation, landscape research, draft analysis, prompt construction, delta analysis, and a final QC pass with a clean file write.
-- **Command — `/optimize-prompt <draft | file path | description>`** — an explicit entry point that hands off to the skill and runs the full protocol without skipping its interaction gates.
+- **Skill — `prompt-optimization`** — auto-triggers when you provide a draft prompt to improve, ask to optimize/harden/refine a prompt, or describe a multi-agent research workflow. Runs a sequential protocol: intent extraction, complexity triage, widget-based clarification, mandatory live calibration against Anthropic documentation, landscape research, draft analysis, prompt construction, delta analysis, and a final QC pass with a clean file write. Invoke explicitly with `/prompt-optimization` if the auto-trigger doesn't fire.
 - **Agent — `landscape-research`** — a read-only research worker the skill dispatches in parallel during its orchestrated Phase 2 (mode 2-O) to deepen landscape research across multiple lanes, then synthesizes the results centrally.
+- **Agent — `devils-advocate`** — a read-only adversarial / confirmatory worker the synthesis agent dispatches in Wave 2 of every orchestrated-research deliverable: adversarial mode for thesis-advancing deliverables, confirmatory mode for purely descriptive inventory / fact-extract deliverables.
 
 ## Orchestrated landscape research (mode 2-O)
 
@@ -52,8 +52,8 @@ When the Agent/Task tool is available and a draft is multi-sub-domain, multi-sta
     └── prompt-optimization/
         ├── .claude-plugin/plugin.json        # plugin manifest
         ├── skills/prompt-optimization/       # SKILL.md + references/
-        ├── commands/optimize-prompt.md       # /optimize-prompt
-        ├── agents/landscape-research.md       # research worker
+        ├── agents/landscape-research.md      # landscape research worker
+        ├── agents/devils-advocate.md         # devil's-advocate / confirmatory worker
         └── README.md
 ```
 

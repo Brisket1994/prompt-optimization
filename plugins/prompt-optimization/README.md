@@ -6,9 +6,15 @@ Transform a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrat
 
 | Type | Name | Purpose |
 |------|------|---------|
-| Skill | `prompt-optimization` | The phased optimization protocol. Auto-triggers on prompt-improvement intent. |
-| Command | `/optimize-prompt` | Explicit entry point; runs the skill's full protocol on a draft, file path, or description. |
+| Skill | `prompt-optimization` | The phased optimization protocol. Auto-triggers on prompt-improvement intent, or invoke explicitly with `/prompt-optimization`. |
 | Agent | `landscape-research` | Read-only research worker dispatched in parallel during orchestrated Phase 2 (mode 2-O). |
+| Agent | `devils-advocate` | Read-only adversarial / confirmatory worker dispatched by the synthesis agent in Wave 2 of every orchestrated-research deliverable. |
+
+## How to invoke
+
+- **Drafts in text:** Paste the draft into chat with optimization intent ("optimize this prompt: …", "harden this CLAUDE.md", "refine this system message"). The skill auto-triggers.
+- **Drafts in a file:** Type `/prompt-optimization`; when the skill asks for the draft, paste the path.
+- **Start cold:** Type `/prompt-optimization` and let the skill guide you through Phase 0.
 
 ## How it works
 
