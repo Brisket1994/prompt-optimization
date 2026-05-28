@@ -153,13 +153,16 @@ Per-section task-type guidance below assumes this rule and does not restate it.
 
 ### Orchestrated multi-agent research
 
-This deserves a full operational guide — see `references/orchestrated-research.md`. Key heuristics:
+This deserves a full operational guide — see `references/orchestrated-research.md` for the multi-agent mechanics and `references/synthesis-deliverable.md` for the deliverable contract (executive summary, source-validation, devil's advocate). Key heuristics:
 
 **Opus 4.7-specific enhancements.**
 
 - The orchestrator MUST be instructed explicitly to dispatch subagents (`SKILL.md` Meta-Rule 13). 4.7 under-delegates by default. "Use subagents" is not enough — the prompt should say *when, why, and how many*.
 - Subagent prompts must never embed unverified numerical estimates. Use the shared-constants pattern or instruct each subagent to verify independently. (Meta-Rule 13.)
-- Synthesis is the primary quality gate — design it as the heaviest section of the orchestrator.
+- Synthesis is the primary quality gate — design it as the heaviest section of the orchestrator. The current canonical synthesis surface is **seven mandatory tasks** (consistency, coverage, source diversity, bias, synthesized findings, source-validation revisit pass on load-bearing sources, devil's-advocate integration). `orchestrated-research.md` §7.
+- The synthesis agent **owns the deliverable's evidentiary chain**. Every claim in the deliverable body cites the URL that supports it; the deliverable leads with an executive summary tying each key finding to a primary source URL with a source-validation verdict. `synthesis-deliverable.md` § Executive summary template.
+- **Always run a load-bearing source-validation revisit pass** on every URL cited as primary support for an executive-summary key finding. The synthesis agent re-fetches the source and verifies the subagent's attribution. `synthesis-deliverable.md` § Source-validation revisit protocol.
+- **Always dispatch a devil's-advocate / confirmatory subagent** (Wave 2) before finalizing the executive summary. Adversarial mode for thesis-advancing deliverables (analytical, decision-support, recommendation); confirmatory mode for purely descriptive deliverables (inventory, fact-extract). The verdict-ladder discipline (`unresolved` requires sourced, credible counterweight) prevents verdict-mush. `synthesis-deliverable.md` § Devil's-advocate dispatch brief.
 - The deliverable is a `CLAUDE.md`. Structure per `orchestrated-research.md` Section 10. The orchestrator template in `prompt-template.md` cross-references that section rather than restating it.
 - Environment: `CLAUDE_CODE_SUBAGENT_MODEL=claude-opus-4-7[1m]` per the Standing Environment Assumption — no Sonnet/Haiku subagents.
 
@@ -168,12 +171,18 @@ This deserves a full operational guide — see `references/orchestrated-research
 - "The orchestrator decides whether to dispatch" — too soft. The model will choose not to dispatch by default.
 - Reused identical subagent prompts that don't differentiate scope (each subagent gets the same instructions → results overlap, synthesis adds nothing).
 - Synthesis as a thin "summarize the results" step — it's the primary quality gate, not a postscript.
+- Claims in the deliverable body without source URLs — the synthesis-as-owner contract requires every claim to be sourced or explicitly framed as synthesis-agent integrative reasoning.
+- "Trust the subagent's citations" as a substitute for the source-validation revisit pass — paraphrase drift between source and subagent attribution is a known failure mode the pass catches.
+- Devil's advocate added as a cosmetic block ("we considered counter-arguments") without integrated per-finding verdicts.
 
 **Missing-enhancement checks.**
 
 - Are subagent scopes mutually exclusive (or, if not, is overlap deliberate and reconciled in synthesis)?
 - Does each subagent prompt specify output scope (length, format, citation discipline)?
 - Does the orchestrator specify how to handle subagent failures (remediation pass, partial-result synthesis)?
+- Does the deliverable lead with an executive summary tying each key finding to a primary URL + source-validation verdict + confidence?
+- Are devil's-advocate verdicts integrated into the executive summary per finding, under the verdict-ladder discipline?
+- Is the mode choice (adversarial / confirmatory) recorded with a one-sentence rationale?
 
 ### Creative
 
@@ -299,6 +308,12 @@ Phase 3 cites this section by exact heading — keep the heading verbatim. The t
 | 18 | **Model-routing recommendations in the prompt body** | Standing Environment forbids Sonnet/Haiku routing for the optimized prompt's execution. If the body recommends model routing for its own execution, it contradicts the deployment. | Strip routing recommendations. Move any harness-level model-routing logic to the chat run sheet's `<deployment_config>`, not the body. | High |
 | 19 | **High-resolution image scaling assumptions** (4.6-era bounding-box conversion) | On Opus 4.7, pointing/bounding-box coordinates are 1:1 with image pixels. Scale-factor conversion logic carried over from 4.6 returns wrong coordinates. | Remove scale-factor conversion code/instructions. | High |
 | 20 | **Cyber-content draft assumptions** | Opus 4.7 has new real-time cybersecurity safeguards. Drafts that assume the old refusal calibration may now refuse. | For legitimate security work, instruct the executor to surface refusals rather than retry around them, and route the user toward the Cyber Verification Program for production-grade access. | Medium |
+| 21 | **Synthesis without source attribution** (orchestrated-research deliverable) | Claims float sourceless in the deliverable body; the reader cannot trace evidence and cannot challenge specific findings without re-reading the underlying subagent material. (`SKILL.md` Meta-Rule 13 (3); `synthesis-deliverable.md` § Synthesis-as-owner contract.) | Every claim in the deliverable cites the URL that supports it. Synthesis-agent integrative reasoning across multiple cited findings is explicitly framed ("Combining findings 1 and 3, …"). | High |
+| 22 | **Missing executive summary** on orchestrated-research deliverable | The deliverable opens with synthesized findings or evidence sections; no key-findings + per-finding-URL + per-finding-conclusion + overall-conclusion block at the top. Downstream readers cannot skim; the logical-soundness sanity check the executive summary provides is absent. | The executive summary is the deliverable's first section, no exceptions. Use the template in `synthesis-deliverable.md` § Executive summary template. | High |
+| 23 | **Devil's advocate dispatched but findings not integrated** (cosmetic-pass anti-pattern) | The Wave 2 dispatch ran but the executive summary's devil's-advocate block is empty, generic, or absent — the verdicts never reached the deliverable. Looks like compliance; provides no defensibility. | The synthesis agent integrates verdicts per finding under the verdict-ladder discipline before the executive summary is finalized. Empty block is itself a fail. | High |
+| 24 | **Source-validation revisit skipped** because "the subagent cited correctly" | The synthesis agent trusted subagent paraphrases of source content without re-fetching the source. Paraphrase drift between source and subagent attribution is a known failure mode this pass catches. | Synthesis task 6 is mandatory on every load-bearing URL. Re-fetch, compare verbatim, record `verified` / `partially verified` / `not verified` / `unreachable`. | High |
+| 25 | **Verdict-mush** (every key finding flipped to `unresolved`) | The devil's advocate ran without the credibility floor; every counter-argument that merely *exists* triggered `unresolved`; the overall conclusion hedged into uselessness. | Apply the verdict-ladder discipline: `unresolved` requires sourced, credible counterweight surviving a Tier-2+ citation in the source-trust hierarchy. Default to `confirmed` when nothing meets the bar. | High |
+| 26 | **Mode mismatch — adversarial on a purely descriptive deliverable** | Devil's advocate ran in adversarial mode on a pure inventory / fact-extract deliverable; the agent fabricated thesis-style disagreements where none honestly exist (Tessera "might not really be a competitor" etc. on a competitor inventory). | Apply the mode sniff: descriptive deliverables (inventory, fact-extract, directory, roster, chronology) run in confirmatory mode; analytical / decision-support / recommendation deliverables run in adversarial mode. Default to adversarial on the boundary. | Medium |
 
 **Severity legend.** `Blocking` = causes 400 errors / API failures. `High` = causes wrong outputs or silent quality loss. `Medium` = degrades quality. `Low` = style friction. Rows marked Blocking or High are always *material* gaps in Phase 6A QC; Medium/Low are minor unless they aggregate.
 

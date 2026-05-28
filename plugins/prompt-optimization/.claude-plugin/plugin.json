@@ -1,8 +1,8 @@
 {
   "name": "prompt-optimization",
   "displayName": "Prompt Optimization",
-  "version": "0.1.1",
-  "description": "Transform a draft prompt, system message, CLAUDE.md, or multi-agent orchestrator into production-grade instructions for Claude Opus 4.7. Runs a phased optimization protocol with mandatory live calibration against Anthropic documentation, plus an orchestrated fan-out mode that deepens landscape research via parallel subagents. Ships a /optimize-prompt command and a landscape-research worker agent.",
+  "version": "0.2.0",
+  "description": "Transform a draft prompt, system message, CLAUDE.md, or multi-agent orchestrator into production-grade instructions for Claude Opus 4.7. Runs a phased optimization protocol with mandatory live calibration against Anthropic documentation, plus an orchestrated fan-out mode that deepens landscape research via parallel subagents. Orchestrated-research deliverables lead with an executive summary, run a load-bearing source-validation revisit pass, and ship an always-on devil's-advocate / confirmatory subagent under a verdict-ladder discipline. Ships a /optimize-prompt command and bundled landscape-research + devils-advocate worker agents.",
   "author": {
     "name": "Mac Zabriskie"
   },

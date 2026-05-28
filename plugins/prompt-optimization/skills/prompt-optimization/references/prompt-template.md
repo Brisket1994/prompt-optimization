@@ -103,11 +103,14 @@ The orchestrator template covers, in order:
 3. Subagent dispatch (per-subagent: scope, not-in-scope, output, source discipline, verification)
 4. Wave structure (if wave-based)
 5. Shared constants (if hybrid pattern)
-6. Synthesis (the primary quality gate — five mandatory tasks)
-7. Deliverable (path + structure)
-8. Remediation rule
+6. Synthesis (the primary quality gate — **seven** mandatory tasks; tasks 6 and 7 add the load-bearing source-validation revisit pass and the devil's-advocate integration)
+7. Wave 2 — Devil's advocate (mandatory, always-on; adversarial mode for thesis-advancing deliverables, confirmatory mode for purely descriptive ones)
+8. Deliverable (path + structure — **leads with the executive summary**)
+9. Remediation rule
 
 Refer to Section 10 for the per-element guidance and the authoring notes.
+
+**Also load [synthesis-deliverable.md](synthesis-deliverable.md)** alongside Section 10. It carries the executive-summary template (key findings → primary URLs + source-validation verdicts → per-finding conclusions → overall conclusion → devil's-advocate verdicts), the source-validation revisit protocol on load-bearing sources, the always-on devil's-advocate dispatch brief (adversarial / confirmatory modes), and the verdict-ladder discipline that prevents verdict-mush. Section 10 embeds the structural slots; `synthesis-deliverable.md` carries the content discipline that makes those slots load-bearing.
 
 ### Orchestrator chat run sheet — what goes alongside, not inside
 

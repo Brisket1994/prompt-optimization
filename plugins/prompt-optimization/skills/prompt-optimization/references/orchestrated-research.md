@@ -168,8 +168,10 @@ Each subagent needs to know how long its output should be and what shape it shou
 3. **Source diversity check.** Synthesis verifies the corpus across subagents meets the source-type diversity bar (Phase 2's 3-of-5 categories applied across the full subagent corpus, not just per subagent).
 4. **Bias / position check.** Has any subagent embedded a conclusion in its output? Synthesis strips conclusions and re-presents as topics-and-evidence, not positions.
 5. **Synthesized findings.** Beyond the subagent outputs themselves, what does the combined work imply? The synthesized findings are the deliverable's value-add.
+6. **Source-validation revisit pass on load-bearing sources.** For every URL cited as primary support for an executive-summary key finding, the synthesis agent re-fetches the source and verifies the subagent's attribution. Verdicts: `verified` / `partially verified — see note` / `not verified` / `unreachable`. A `not verified` load-bearing source either strikes the key finding or forces re-derivation from a different sourced support; `partially verified` revises the key finding to match the source. The source-validation log is working machinery — it stays in the chat run sheet, never in the written deliverable. Full protocol in [synthesis-deliverable.md](synthesis-deliverable.md) § Source-validation revisit protocol.
+7. **Devil's-advocate dispatch and integration.** Always-on. After the synthesis agent drafts key findings and runs the source-validation pass, it dispatches a `devils-advocate` worker (or inlines an equivalent brief when the bundled agent is unavailable) in either **adversarial mode** (default for analytical / decision-support deliverables) or **confirmatory mode** (for purely descriptive inventory / fact-extract deliverables). The agent returns a structured findings pack; the synthesis agent integrates the verdicts into the executive summary under the verdict-ladder discipline that prevents verdict-mush (`unresolved` requires a sourced, credible counterweight — not the bare existence of a contrary view). Full protocol in [synthesis-deliverable.md](synthesis-deliverable.md) § Devil's-advocate dispatch brief.
 
-**Synthesis is the orchestrator's job.** It is not delegated to a "synthesis subagent" — because then the synthesis is itself isolated from the orchestrator's context and judgment, and the synthesis output is just another subagent output that needs synthesizing. The orchestrator's context is precisely where synthesis belongs.
+**Synthesis is the orchestrator's job.** It is not delegated to a "synthesis subagent" — because then the synthesis is itself isolated from the orchestrator's context and judgment, and the synthesis output is just another subagent output that needs synthesizing. The orchestrator's context is precisely where synthesis belongs. The devil's-advocate dispatch in task 7 is the one sanctioned exception: it is a **dispatch** that returns evidence and tentative verdicts, not a delegation of synthesis. The synthesis agent still owns what lands in the executive summary, applies the verdict-ladder discipline, and writes the deliverable.
 
 ## 8. The remediation pattern
 
@@ -249,40 +251,59 @@ Spawn the following subagents in parallel using the Agent / Task tool. Each suba
 
 ## Synthesis
 
-After all subagents return, run synthesis. Synthesis is the primary quality gate — do not delegate it to another subagent. Synthesis tasks:
+After all subagents return, run synthesis. Synthesis is the primary quality gate — do not delegate it to another subagent (the Wave 2 devil's-advocate dispatch below is a dispatch, not a delegation of synthesis itself). Synthesis tasks:
 
 1. **Cross-subagent consistency.** Where subagents touched the same topic, are they consistent? Surface every disagreement explicitly.
 2. **Coverage check.** For every sub-domain promised in Scope, is it covered in the returned outputs? List gaps.
 3. **Source diversity check.** Across the full corpus, are at least three of (primary documents / academic / practitioner / mainstream / dissenting) represented? If not, name the missing categories.
 4. **Bias check.** Strip any embedded conclusions from subagent outputs and re-present as topics-with-evidence.
 5. **Synthesized findings.** What does the combined work imply that no single subagent could have surfaced? This is the deliverable's value-add.
+6. **Source-validation revisit pass on load-bearing sources.** For every URL cited as primary support for an executive-summary key finding, re-fetch the source and verify the subagent's attribution. Record `verified` / `partially verified — see note` / `not verified` / `unreachable`. A `not verified` source either strikes the key finding or forces re-derivation; `partially verified` revises the finding to match the source. The source-validation log stays in the chat run sheet, never in the written deliverable. See `synthesis-deliverable.md` § Source-validation revisit protocol.
+7. **Devil's-advocate integration.** After the Wave 2 dispatch below returns, apply the verdict-ladder discipline and integrate verdicts into the executive summary. `unresolved` only fires when adversarial evidence meets the credibility bar.
 
 Length: [calibrated to the deliverable, typically 25–50% of the combined subagent output].
 
+## Wave 2 — Devil's advocate (mandatory)
+
+After synthesis tasks 1–6 complete and key findings are drafted, dispatch the `devils-advocate` worker (or inline an equivalent brief when the bundled agent is unavailable) in one of two modes:
+
+- **Adversarial mode** — default. Use when the deliverable advances an implicit thesis (analytical, decision-support, evaluative, comparative, recommendation-shaped). The agent searches for the strongest sourced evidence each key finding's opposite is true and returns per-finding `confirmed` / `refuted by adversarial pass` / `unresolved — both views credible`.
+- **Confirmatory mode** — use when the deliverable is purely descriptive (inventory, fact-extract, directory, roster). The agent audits included entries (`included correctly` / `included in error` / `boundary case`) and surfaces missed candidates.
+
+Mode-sniff rule: if the deliverable advances a thesis the audience could plausibly disagree with → adversarial; if purely descriptive → confirmatory. Default to adversarial when on the boundary. Record the mode and one-line rationale in the dispatch brief and in the executive summary.
+
+Dispatch brief carries: key-findings list with source-validated URLs; per-finding tentative conclusions; overall conclusion (adversarial mode) OR included entries with inclusion criteria (confirmatory mode); the verdict-ladder discipline verbatim; the topic-not-position discipline verbatim; the search budget.
+
+The devil's-advocate findings pack is working machinery — it stays in the chat run sheet alongside the source-validation log. Only the integrated verdicts land in the deliverable's executive-summary block. See `synthesis-deliverable.md` § Devil's-advocate dispatch brief.
+
 ## Deliverable
 
-Write the final deliverable to [path / filename]. The deliverable contains:
+Write the final deliverable to [path / filename]. The deliverable **leads with the executive summary** and then continues with the supporting body. Required structure:
 
-- [Section 1 of the deliverable — typically a 1-page executive summary]
-- [Section 2 — synthesized findings]
-- [Section 3 — supporting evidence by sub-domain]
-- [Section 4 — gaps and deferred questions]
-- [Section 5 — sources, with citation discipline matched across subagents]
+- **Executive summary (first section, no exceptions).** Per the template in `synthesis-deliverable.md` § Executive summary template: framing paragraph, key findings (each with primary source URL + validation verdict + confidence), per-finding conclusions, overall conclusion, devil's-advocate pass with verdicts.
+- Synthesized findings — the full integrative findings the executive summary distilled from.
+- Supporting evidence by sub-domain — the per-subagent material organized around the key findings, with citations.
+- Gaps and deferred questions — including any source-validation `revisit deferred` items, any `audit deferred` items from confirmatory mode, and any sub-domain coverage gaps surfaced in synthesis task 2.
+- Sources — every URL cited anywhere in the deliverable, with consistent citation discipline across subagents.
 
-Do not include in the deliverable: the orchestration scaffolding above, the subagent prompts, the wave structure, the synthesis self-check. Those belong in the orchestrator's chat output, never in the written file. (This mirrors the Deliverable Contract partition in the parent skill.)
+**Every claim in the deliverable carries a URL.** Synthesis-agent integrative reasoning across multiple cited findings is explicit ("Combining findings 1 and 3, …") rather than implicit. Claims without a URL are either explicitly-framed integrative reasoning or deleted.
+
+Do not include in the deliverable: the orchestration scaffolding above, the subagent prompts, the wave structure, the synthesis self-check, the source-validation log, the devil's-advocate findings pack. Those belong in the orchestrator's chat output, never in the written file. (This mirrors the Deliverable Contract partition in the parent skill. The Phase 6B pre-write strip check covers the new working-artifact types.)
 
 ## Remediation rule (if any)
 
-If synthesis surfaces a material gap that the original decomposition did not anticipate, dispatch exactly one remediation subagent with a narrowly-scoped prompt. Cap at one remediation pass. If a second pass would help, document the unexplored thread in the deliverable's "Gaps and deferred questions" section rather than recursing further.
+If synthesis surfaces a material gap that the original decomposition did not anticipate, dispatch exactly one remediation subagent with a narrowly-scoped prompt. Cap at one remediation pass. If a second pass would help, document the unexplored thread in the deliverable's "Gaps and deferred questions" section rather than recursing further. The devil's-advocate Wave 2 dispatch is separate from this remediation rule — it always runs once and is not subject to the remediation cap.
 ```
 
 ### Authoring notes
 
 - Every subagent section must restate "not in scope" — this is what differentiates subagents and prevents overlap.
 - Synthesis is sized at 25–50% of combined subagent output because synthesis is a quality gate, not a summary.
-- The deliverable partitioning (write file = deliverable body; orchestrator scaffolding = chat-side) mirrors the parent skill's Deliverable Contract.
-- Cite-every-claim discipline propagates from orchestrator to subagents to deliverable.
-- For Meta-Rule 13 compliance: every numeric value that the orchestrator passes to a subagent must be either (a) sourced and labeled as such, or (b) instructed to be verified by the subagent independently. Never pass an orchestrator's guess as fact.
+- The deliverable partitioning (write file = deliverable body; orchestrator scaffolding + source-validation log + devil's-advocate findings pack = chat-side) mirrors the parent skill's Deliverable Contract.
+- Cite-every-claim discipline propagates from orchestrator to subagents to deliverable — every claim in the deliverable body carries a URL.
+- The executive summary is the deliverable's first section, no exceptions. Its template is in `synthesis-deliverable.md` and its structure (key findings → primary URLs + validation verdicts → per-finding conclusions → overall conclusion → devil's-advocate verdicts) is load-bearing for downstream reader sanity-checking.
+- For Meta-Rule 13 compliance: every numeric value that the orchestrator passes to a subagent must be either (a) sourced and labeled as such, or (b) instructed to be verified by the subagent independently. Never pass an orchestrator's guess as fact. The synthesis agent's source-validation pass (task 6) is the downstream guardrail that catches unverified numbers that nevertheless made it into the deliverable's load-bearing claims.
+- Devil's-advocate Wave 2 is **always-on**, but the mode adapts to the deliverable shape — adversarial for analytical deliverables, confirmatory for purely descriptive deliverables. Default to adversarial on the boundary.
 
 ### Section 10 — Worked example
 
@@ -310,15 +331,21 @@ Produce a 5–7 page diligence brief on Acme SaaS's competitive position in mid-
 
 ## Synthesis (orchestrator-only — do not delegate)
 
-Five mandatory tasks: (1) cross-subagent consistency (especially A↔C on overlapping competitors); (2) coverage check (all competitors named in A appear in B/C/D); (3) source-diversity check (3-of-5 categories across the full corpus); (4) bias check (strip embedded conclusions like "X is the dominant threat"); (5) synthesized findings (what the combined work implies about Acme's defensible position).
+Seven mandatory tasks: (1) cross-subagent consistency (especially A↔C on overlapping competitors); (2) coverage check (all competitors named in A appear in B/C/D); (3) source-diversity check (3-of-5 categories across the full corpus); (4) bias check (strip embedded conclusions like "X is the dominant threat"); (5) synthesized findings (what the combined work implies about Acme's defensible position); (6) source-validation revisit on every URL cited as primary support for an executive-summary key finding; (7) integrate Wave 2 devil's-advocate verdicts under the verdict-ladder discipline.
 
 Length: ~1500–2200 words (25–50% of combined subagent output).
 
+## Wave 2 — Devil's advocate (mandatory)
+
+Dispatch `devils-advocate` in **adversarial mode** (this deliverable advances a recommendation on Acme's competitive position — analytical, not descriptive). Brief carries the key-findings list with source-validated URLs and the per-finding tentative conclusions. Verdict-ladder discipline verbatim: `unresolved` requires sourced, credible counterweight.
+
 ## Deliverable
 
-Write to `diligence-brief-acme.md`. Sections: executive summary, synthesized findings, supporting evidence by sub-domain, gaps / deferred questions, sources.
+Write to `diligence-brief-acme.md`. Leads with the **executive summary** per `synthesis-deliverable.md` § Executive summary template (framing → key findings + primary URL + validation verdict + confidence → per-finding conclusions → overall conclusion → devil's-advocate pass). Then: synthesized findings; supporting evidence by sub-domain; gaps / deferred questions; sources.
 
-Do not include in the deliverable: the subagent prompts above, the synthesis self-check (those belong in the orchestrator's chat output per the Deliverable Contract partition).
+Every claim in the body carries a URL.
+
+Do not include in the deliverable: the subagent prompts above, the synthesis self-check, the source-validation log, the devil's-advocate findings pack (those belong in the orchestrator's chat output per the Deliverable Contract partition).
 ```
 
 ## 11. Failure mode catalog
@@ -339,6 +366,14 @@ The patterns below are the ways orchestrated research most commonly degrades. Ea
 | **Cascading remediation** | Remediation pass spawns another remediation pass | Cap at one remediation. The second is a signal the original decomposition was wrong — restart Phase 2 instead. | §8 (remediation cap) |
 | **Subagent runs out of context mid-task** | Subagent returns truncated output | Use the 1M-context Opus alias (`claude-opus-4-7[1m]`) via `CLAUDE_CODE_SUBAGENT_MODEL`. If 1M is insufficient, the subagent scope is wrong — narrow it. | §9 (environment configuration) |
 | **Subagent fabricates citations** | Citations in subagent output don't resolve | Subagent prompt must demand cite-every-claim with verifiable sources. Synthesis's source-diversity check should catch this. | §3 (source discipline) + §7 (source-diversity check) |
+| **Synthesis without source attribution** | Deliverable body contains claims that float sourceless; reader cannot trace evidence | Synthesis-as-owner contract: every claim cites the URL that supports it. Integrative reasoning is explicit ("Combining findings 1 and 3, …"). | §7 (task 6) + [synthesis-deliverable.md](synthesis-deliverable.md) § Synthesis-as-owner contract |
+| **Missing executive summary** | Deliverable opens with synthesized findings or jumps directly to evidence — no key-findings + URL + per-finding-conclusion + overall-conclusion block at the top | Executive summary is the deliverable's first section, no exceptions. Use the template in [synthesis-deliverable.md](synthesis-deliverable.md). | §10 (Deliverable section) + [synthesis-deliverable.md](synthesis-deliverable.md) § Executive summary template |
+| **Source-validation pass skipped** | Executive-summary key findings carry the subagent's original confidence and attribution but no `verified` / `partially verified` / `not verified` / `unreachable` verdict | Synthesis task 6 is mandatory. Every load-bearing URL is re-fetched and the subagent's attribution is checked against the source. | §7 (task 6) + [synthesis-deliverable.md](synthesis-deliverable.md) § Source-validation revisit protocol |
+| **Load-bearing source unverified but key finding kept at full confidence** | A `not verified` or `unreachable` verdict landed in the log but the key finding still rides into the overall conclusion as if it were verified | Strike the finding, re-derive from a different sourced support, or downgrade its confidence and surface the downgrade in the executive summary. Never silently retain. | §7 (task 6) + [synthesis-deliverable.md](synthesis-deliverable.md) § Source-validation revisit protocol |
+| **Devil's-advocate dispatched but findings not integrated** | The Wave 2 dispatch ran but the executive summary's devil's-advocate block is empty, generic, or omitted — the verdicts never reached the deliverable | The synthesis agent integrates the verdicts under the verdict-ladder discipline before the executive summary is finalized. Empty block is itself a fail. | §7 (task 7) + [synthesis-deliverable.md](synthesis-deliverable.md) § Devil's-advocate dispatch brief |
+| **Verdict-mush** | Every key finding flipped to `unresolved — both views credible`; the overall conclusion hedges into uselessness | Apply the verdict-ladder discipline: `unresolved` requires sourced, credible counterweight that survives a Tier-2+ citation in the source-trust hierarchy. Default to `confirmed` when nothing meets the bar. | §7 (task 7) + [synthesis-deliverable.md](synthesis-deliverable.md) § Verdict-ladder discipline |
+| **Mode mismatch — adversarial on a descriptive deliverable** | Devil's advocate ran in adversarial mode on a pure inventory / fact-extract deliverable and fabricated thesis-style disagreements where none honestly exist | Apply the mode sniff: descriptive deliverables (inventory, fact-extract, directory, roster) run in confirmatory mode. Adversarial mode is for thesis-advancing deliverables. | §10 (Wave 2 section) + [synthesis-deliverable.md](synthesis-deliverable.md) § Mode sniff |
+| **Conclusion not traceable to a key finding** | The overall conclusion contains a claim that does not derive from any per-finding conclusion in the executive summary | The overall conclusion is constrained to claims that derive from the per-finding conclusions. If a claim has no upstream key finding, either delete it from the conclusion or surface a new key finding that supports it. | §10 (Deliverable section) + [synthesis-deliverable.md](synthesis-deliverable.md) § Executive summary template |
 
 ## Sources
 
