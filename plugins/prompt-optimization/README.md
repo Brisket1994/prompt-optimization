@@ -1,6 +1,6 @@
 # prompt-optimization (plugin)
 
-Transform a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Fable 5, with **fallback-aware** deployment guidance for the Fable 5 / Opus 4.8 silent-fallback architecture. Calibrated against live Anthropic documentation on every run.
+Transform a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Fable 5, with **no-silent-fallback** deployment guidance for the Fable 5 classifier / prior-flagship fallback architecture (structured refusal categories as stop-and-surface signals; fallback events surfaced, never silently accepted). Calibrated against live Anthropic documentation on every run.
 
 ## Components
 

@@ -82,8 +82,8 @@ Address the following sub-topics. Present multiple perspectives where they disag
 - Streaming: <enabled / disabled per UX>; if streaming reasoning, set thinking.display = "summarized"
 - Beta headers: task-budgets-2026-03-13 if task budgets used; output-300k-2026-03-24 if Batches API (pending re-verification — Phase 1.5)
 - Sampling parameters: omitted (non-default temperature / top_p / top_k return 400 on Fable 5)
-- Mid-conversation system messages (optional): enable role:"system" turns after a user turn for long agentic loops — updates instructions without restating the system prompt and preserves cache (Opus 4.8 carryforward, exercised on Fable 5)
-- Fallback handling (Meta-Rule 16): read the structured refusal category AND the fallback-model field from the response object (supersedes stop_details). Opt in to server-side fallback if needed. Document expected fallback rate for sensitive domains.
+- Mid-conversation system messages (optional): enable role:"system" turns after a user turn for long agentic loops — updates instructions without restating the system prompt and preserves cache (carried forward from the prior generation, exercised on Fable 5)
+- Fallback handling (Meta-Rule 16, no-silent-fallback posture): treat the structured refusal category as a stop-and-surface signal — do NOT designate a fallback model and do NOT opt into server-side fallback; report refusals to the user and never retry around them. On surfaces with non-configurable auto-fallback, watch for the session fallback event, surface it immediately, and halt model-sensitive work. Document the expected classifier-trigger rate for sensitive domains so the run sheet plans for surfaced halts, not degraded continuation.
 - Stop reasons to handle: refusal (with structured category), model_context_window_exceeded, end_turn, max_tokens, tool_use
 </deployment_config>
 ````

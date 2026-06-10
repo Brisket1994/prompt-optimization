@@ -8,7 +8,7 @@
     {
       "name": "prompt-optimization",
       "source": "./plugins/prompt-optimization",
-      "description": "Transform draft prompts into production-grade instructions for Claude Fable 5, with mandatory live-doc calibration, a Claude Code dynamic-workflow orchestration mode, and fallback-aware deployment guidance."
+      "description": "Transform draft prompts into production-grade instructions for Claude Fable 5, with mandatory live-doc calibration, a Claude Code dynamic-workflow orchestration mode, and no-silent-fallback deployment guidance (refusal categories are stop-and-surface signals; fallback events are surfaced, never silently accepted)."
     }
   ]
 }

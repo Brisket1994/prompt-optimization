@@ -1,8 +1,8 @@
 {
   "name": "prompt-optimization",
   "displayName": "Prompt Optimization",
-  "version": "2.0.0",
-  "description": "Transform a draft prompt, system message, CLAUDE.md, or multi-agent orchestrator into production-grade instructions for Claude Fable 5. Runs a phased optimization protocol with mandatory live calibration against Anthropic documentation; an orchestrated fan-out mode that deepens landscape research via Claude Code dynamic workflows; and Fable-5-fallback-aware deployment guidance (structured refusal categories, opt-in server-side fallback to Opus 4.8, session-event fallback semantics, expected fallback rates by workload). Orchestrated-research deliverables lead with an executive summary, run a load-bearing source-validation revisit pass, run an always-on verify-and-converge stage under verdict-ladder discipline, and prefer non-blocking multi-agent harness patterns over blocking orchestrators. The Phase 3 anti-pattern sweep incorporates Fable 5 / Mythos 5 system-card behavioral findings (six-pattern long-horizon failure taxonomy; elevated grader/eval awareness; ~35× lower over-refusal; prompt-injection improvements with browser-legacy and prefill regressions; multi-agent turf wars; simulation-framing and survival-pressure rationalization; detect-but-execute; context anxiety; over-engineering bias). Invoke by pasting a draft with optimization intent (auto-trigger) or by typing /prompt-optimization. Ships bundled landscape-research + devils-advocate worker agents.",
+  "version": "2.1.0",
+  "description": "Transform a draft prompt, system message, CLAUDE.md, or multi-agent orchestrator into production-grade instructions for Claude Fable 5. Runs a phased optimization protocol with mandatory live calibration against Anthropic documentation; an orchestrated fan-out mode that deepens landscape research via Claude Code dynamic workflows; and no-silent-fallback deployment guidance (structured refusal categories as stop-and-surface signals; fallback events surfaced, never silently accepted). Orchestrated-research deliverables lead with an executive summary, run a load-bearing source-validation revisit pass, run an always-on verify-and-converge stage under verdict-ladder discipline, and prefer non-blocking multi-agent harness patterns over blocking orchestrators. The Phase 3 anti-pattern sweep incorporates Fable 5 / Mythos 5 system-card behavioral findings (six-pattern long-horizon failure taxonomy; elevated grader/eval awareness; over-refusal collapsed to the lowest measured to date; prompt-injection improvements with browser-legacy and prefill regressions; multi-agent turf wars; simulation-framing and survival-pressure rationalization; detect-but-execute; context anxiety; over-engineering bias). Invoke by pasting a draft with optimization intent (auto-trigger) or by typing /prompt-optimization. Ships bundled landscape-research + devils-advocate worker agents.",
   "author": {
     "name": "Mac Zabriskie"
   },
@@ -13,7 +13,7 @@
     "prompt-optimization",
     "fable-5",
     "mythos-5",
-    "fallback-aware",
+    "no-silent-fallback",
     "dynamic-workflows",
     "orchestration",
     "multi-agent",

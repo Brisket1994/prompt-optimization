@@ -44,7 +44,7 @@ Purpose: confirm the deployment target's setup specifics — required headers, e
 Anthropic Claude flagship model card [current year]
 ```
 
-Purpose: catch capability drift (context window, output ceiling, knowledge cutoff, tokenizer changes, newly deprecated parameters) AND confirm whether the model identifier named in the skill (`claude-fable-5` at the calibration-stamp date) is still the current flagship. **The brand line is no longer assumed to be "Opus"** — the Fable / Mythos transition demonstrates that flagship names can change across model generations, so Query 4 drops the "Opus" qualifier and searches for the **current flagship** under whatever name Anthropic ships.
+Purpose: catch capability drift (context window, output ceiling, knowledge cutoff, tokenizer changes, newly deprecated parameters) AND confirm whether the model identifier named in the skill (`claude-fable-5` at the calibration-stamp date) is still the current flagship. **The brand line is not assumed to be any particular legacy name** — generational transitions demonstrate that flagship names can change across model generations, so Query 4 carries no brand qualifier and searches for the **current flagship** under whatever name Anthropic ships.
 
 **Two-tier architecture detection clause.** If Query 4 surfaces a new frontier + safeguarded-variant split (analogous to the Mythos 5 / Fable 5 architecture), file as **NEW / UPDATED PRACTICES** requiring (a) deployment-config model-ID substitution per `SKILL.md` § Model-Version Runtime Substitution, AND (b) harness-side fallback handling per `SKILL.md` Meta-Rule 16 (structured refusal category + opt-in fallback model field).
 

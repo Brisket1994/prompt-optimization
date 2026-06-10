@@ -50,13 +50,13 @@ Rows are capabilities relevant to optimized-prompt construction; columns are the
 
 ## Subscription tiers
 
-| Tier | Available surfaces | 1M Opus context | Notes |
+| Tier | Available surfaces | 1M context (Fable 5) | Notes |
 |------|--------------------|------------------|-------|
 | **Pro** | claude.ai, Claude Code (limited), Cowork | Requires usage credits | Entry tier; subject to rate limits the skill's optimized prompts should not assume away. |
 | **Max 5x** | claude.ai, Claude Code, Cowork | Included | |
 | **Max 20x** | claude.ai, Claude Code, Cowork | Included | **Standing Environment Assumption for this skill.** No rate limits, no token-budget constraints, full context. |
 | **Team Standard** | All paid surfaces + org features | Requires usage credits | |
-| **Team Premium** | All paid surfaces + org features | Included | Per-seat 1M Opus access. |
+| **Team Premium** | All paid surfaces + org features | Included | Per-seat 1M context access. |
 | **Enterprise** | All surfaces + SSO, audit, managed settings, custom retention | Included | Admins can pin model versions, restrict `availableModels`, deploy managed subagents. |
 | **API pay-as-you-go** | Direct Claude API (`api.anthropic.com`) | Full access | No subscription overlay; per-token billing. |
 

@@ -1,6 +1,6 @@
 # prompt-optimization
 
-A single-plugin [Claude Code](https://code.claude.com/docs/en/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Fable 5 (with fallback-aware deployment guidance for the Fable 5 / Opus 4.8 silent-fallback architecture).
+A single-plugin [Claude Code](https://code.claude.com/docs/en/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Fable 5 (with no-silent-fallback deployment guidance for the Fable 5 classifier / prior-flagship fallback architecture).
 
 ## Install
 

@@ -1,6 +1,6 @@
 # Dynamic Workflows — Complete Operational Guide
 
-> **Calibration stamp:** Product facts in this reference (workflow runtime, caps, triggers, research-preview status, version gate) re-verified against the **Claude Fable 5 / Mythos 5 System Card (2026-06-09)** on **2026-06-10**. The 16-concurrent / 1,000-total caps and the `acceptEdits` mode are carried forward from the Opus 4.8-era docs and tagged "pending re-verification (Phase 1.5)". The authoring-API surface is grounded in the live Claude Code workflow runtime and cross-checked against the public docs' constraints; Anthropic does not yet publish the JavaScript function reference, so re-verify both on every skill run via Phase 1.5.
+> **Calibration stamp:** Product facts in this reference (workflow runtime, caps, triggers, research-preview status, version gate) re-verified against the **Claude Fable 5 / Mythos 5 System Card (2026-06-09)** on **2026-06-10**. The 16-concurrent / 1,000-total caps and the `acceptEdits` mode are carried forward from the prior-generation docs and tagged "pending re-verification (Phase 1.5)". The authoring-API surface is grounded in the live Claude Code workflow runtime and cross-checked against the public docs' constraints; Anthropic does not yet publish the JavaScript function reference, so re-verify both on every skill run via Phase 1.5.
 
 This reference is the full operational manual for the `orchestrated-research` task type. On Fable 5 the deliverable is **a `CLAUDE.md` that orchestrates a Claude Code *dynamic workflow*** — a JavaScript orchestration script Claude authors and a runtime executes. It covers when dynamic workflows apply, the runtime model, the authoring API, how decomposition maps onto workflow primitives, the verify-and-converge quality stage, synthesis, the caps/cost/safety envelope, the load-bearing deliverable template (**Section 10**), and the failure-mode catalog. `SKILL.md` Phase 4 cites **Section 10** by number — that section's heading and number are load-bearing; do not move them.
 
@@ -32,7 +32,7 @@ It does not apply when the task is small enough to do in one pass, is genuinely 
 
 ### What Fable 5 + dynamic workflows change vs. the 4.7 subagent model
 
-The previous design rested on a behavioral premise: *"Opus under-delegates by default, so the orchestrator `CLAUDE.md` must explicitly instruct subagent dispatch via the `Agent`/`Task` tool, and the model decides turn-by-turn whether to spawn."* **Dynamic workflows make that premise obsolete.**
+The previous design rested on a behavioral premise: *"The prior flagship under-delegates by default, so the orchestrator `CLAUDE.md` must explicitly instruct subagent dispatch via the `Agent`/`Task` tool, and the model decides turn-by-turn whether to spawn."* **Dynamic workflows make that premise obsolete.**
 
 1. **The script decides what runs next — not the model, turn by turn.** Claude writes a JavaScript orchestration script; a runtime executes it deterministically. Fan-out is no longer something you coax the model into; it is `parallel([...])` in code. The "orchestrator under-delegation" failure mode is solved *structurally*, not by prompting harder.
 2. **Intermediate results live in script variables, not the model's context.** The runtime is isolated from the conversation; only the final answer returns to the session. Context isolation is automatic.
