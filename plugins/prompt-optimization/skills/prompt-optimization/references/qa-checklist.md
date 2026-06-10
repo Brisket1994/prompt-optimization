@@ -116,7 +116,7 @@ Full-track pass requires **all** of:
 Pass requires **all** of:
 
 - [ ] All four mandatory queries (Q1 platform best practices, Q2 task-type guidance, Q3 deployment configuration, Q4 model-card + flagship-currency check) were executed.
-- [ ] Model-version currency confirmed (Query 4, broadened): the search returned the named flagship (`claude-opus-4-8`) as current, OR a newer flagship was detected AND the optimized prompt's deployment configuration was updated to use it. The model-version substitution did not fire when no drift was surfaced.
+- [ ] Model-version currency confirmed (Query 4, broadened): the search returned the named flagship (`claude-fable-5`) as current, OR a newer flagship was detected AND the optimized prompt's deployment configuration was updated to use it. The model-version substitution did not fire when no drift was surfaced.
 - [ ] Conditional Query 5 fired when any of its triggers were met (draft references uncovered feature; baseline >30 days stale; deprecation notice surfaced).
 - [ ] Queries were scoped to authoritative Anthropic sources (`docs.anthropic.com`, `docs.claude.com`, `code.claude.com`, `platform.claude.com`, `anthropic.com`, system cards).
 - [ ] At least one query targeted features unique to the confirmed deployment target.
@@ -179,7 +179,7 @@ Pass requires **all** of:
 - [ ] Coverage gaps from Phase 2 identified (respecting Phase 2.5 scope decisions — excluded sub-domains are not flagged).
 - [ ] Precision deficits identified: vague verbs, implicit assumptions, ambiguous scope, undefined controversy handling.
 - [ ] Phase 1.5 calibration delta cross-referenced — new anti-patterns or deprecated behaviors from the delta are folded in.
-- [ ] Every applicable row of `task-heuristics.md §Opus 4.8 Anti-Patterns` was checked against the draft (rows 1–35); matches were noted for Phase 4 to address and flagged for the Phase 5 delta.
+- [ ] Every applicable row of `task-heuristics.md §Fable 5 Anti-Patterns` was checked against the draft (rows 1–49); matches were noted for Phase 4 to address and flagged for the Phase 5 delta.
 - [ ] System-card rows applied where they fit: row 30 if the draft telegraphs graded/scored/rubric framing; row 32 if a long agentic task can declare "done" without verifying the top-level objective; row 35 (and Meta-Rule 15) if the draft ingests external/untrusted content AND has action capability.
 - [ ] Comprehensiveness deficits identified: missing in-scope sub-domains, undefined debate-handling, undefined temporal scope, unaddressed edge cases.
 
@@ -222,9 +222,9 @@ Pass requires **all** of:
 - [ ] The chat run sheet surfaces research-preview status and the Claude Code v2.1.154+ version gate for the dynamic-workflow runtime.
 - [ ] Lane outputs are schema-structured (each `agent` call carries a `schema` that bounds the return to the fields the synthesis reduce step consumes).
 - [ ] The source-validation log and the verify-and-converge findings pack appear in the chat run sheet only — never in the written deliverable. (Phase 6B pre-write strip check verifies this.)
-- [ ] The synthesis reduce step checks the overall conclusion against the orchestrator's `## Mission` (not an intermediate milestone) and preserves lane uncertainty verbatim (system-card §2.3.3 goal-drift and dropped-caveat mitigations; `synthesis-deliverable.md`).
+- [ ] The synthesis reduce step checks the overall conclusion against the orchestrator's `## Mission` (not an intermediate milestone) and preserves lane uncertainty verbatim (Fable 5 system-card §4 goal-drift and dropped-caveat mitigations; `synthesis-deliverable.md`).
 - [ ] Lane prompts carry no "poll in the background" / "keep monitoring" promises; any polling is an authored `budget`-/condition-bounded loop in the workflow script (`dynamic-workflows.md` §9, §11).
-- [ ] Verify-stage agents are framed as evidence-seekers, not as graders scoring the orchestrator (system-card §4; anti-pattern row 30).
+- [ ] Verify-stage agents are framed as evidence-seekers, not as graders scoring the orchestrator (Fable 5 system-card §5; anti-pattern row 30).
 
 ## Phase 5 — Delta Analysis
 
@@ -249,7 +249,7 @@ Pass requires **all** of:
 - [ ] The summary table covers Phases 0, 1, 1.5, 2 (or N/A), 2.5 (or N/A), 3–4, 5 with PASS / FAIL per row.
 - [ ] The summary lives in the chat run sheet — never in the written file, never as frontmatter comments, never as an end-of-file block.
 - [ ] Audit date carries the session's real current date.
-- [ ] Material gaps (per the `SKILL.md` Phase 6A definition) were fixed before the audit was declared clean. Examples: missing calibration delta items, ignored widget selections, stale pre-4.8 patterns, missing deployment config block, missing completion-verification on file-writing prompts, Opus 4.8 anti-patterns left unaddressed, environment/QC content leaked into the file body.
+- [ ] Material gaps (per the `SKILL.md` Phase 6A definition) were fixed before the audit was declared clean. Examples: missing calibration delta items, ignored widget selections, stale pre-Fable-5 patterns, missing deployment config block, missing completion-verification on file-writing prompts, Fable 5 anti-patterns left unaddressed, environment/QC content leaked into the file body.
 - [ ] Minor gaps (stylistic, capitalization, formatting variance) were fixed silently.
 - [ ] If unsure which tier a gap belonged to, it was treated as material — the asymmetry of cost favored documentation.
 
@@ -268,7 +268,7 @@ Pass requires **all** of:
   - [ ] No Phase 2 internal working artifacts (2A block, 2B log, 2C synthesis, 2D' check).
   - [ ] No orchestrated-research deliverable working artifacts (the dynamic-workflow orchestration spec and lane prompts, the source-validation log, the verify-and-converge findings pack, synthesis-agent's pre-validation key-finding drafts, verbatim source quotes captured during validation).
 - [ ] The file was written to the externally-specified path if one was provided; otherwise to the current working folder with a descriptive filename.
-- [ ] The file landed on disk — verified by re-reading after write (defense-in-depth: Opus 4.8 is materially more reliable at reporting completion than 4.7, but the strip check + read-back is the guardrail regardless).
+- [ ] The file landed on disk — verified by re-reading after write (defense-in-depth: Fable 5 honesty changed shape, not direction, and missing-context honesty regressed — the strip check + read-back is the guardrail regardless).
 - [ ] The folder-relative path was reported in the chat response.
 - [ ] In claude.ai chat (where file writing is unavailable), the inline prompt block was preserved and the user was directed to copy only the prompt block — not the surrounding run sheet.
 

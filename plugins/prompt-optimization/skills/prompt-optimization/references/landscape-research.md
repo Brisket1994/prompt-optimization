@@ -1,6 +1,6 @@
 # Landscape Research — Phase 2 Operational Manual
 
-> **Calibration stamp:** Methodology verified against the skill's own protocol design on **2026-05-28**. The query taxonomy and source-type diversity requirements are skill-internal methodology, not Anthropic product facts — they do not require Phase 1.5 re-verification, but the worked search examples should use the session's real current date.
+> **Calibration stamp:** Methodology verified against the skill's own protocol design on **2026-06-10**. The query taxonomy and source-type diversity requirements are skill-internal methodology, not Anthropic product facts — they do not require Phase 1.5 re-verification, but the worked search examples should use the session's real current date.
 
 This reference is the full operational manual for **Phase 2: Landscape Reconnaissance**. `SKILL.md` Phase 2 carries only the phase contract — purpose, when it runs, the neutrality constraint, and the gate logic. This file carries the executable detail: the four-substep 2A deconstruction, the 2B query taxonomy and source-type diversity requirements, the 2B' adversarial pass, the 2C synthesis artifact, and the 2D / 2D' verification gates.
 
@@ -74,7 +74,7 @@ The Phase-2-specific bindings:
 
 **7. The partition holds identically.** Lane briefs, the orchestration script, and the per-lane findings packs are Phase 2 working machinery — they feed 2C and the chat run sheet, never the optimized prompt body or the written file. In a workflow these intermediate results live in script variables automatically ([dynamic-workflows.md](dynamic-workflows.md) §5); the Phase 6B pre-write strip check enforces the partition regardless of mode.
 
-The runtime caps (16 concurrent / 1,000 total), the one-level nesting constraint, the `acceptEdits` permission posture for spawned agents, and the workflow trigger surface (the word `workflow`; `/effort ultracode`) are documented in [dynamic-workflows.md](dynamic-workflows.md) §2 and §9; both trace to the sources listed at the end of that file (accessed 2026-05-28). This section adds only the Phase-2-specific bindings, which are skill-internal methodology.
+The runtime caps (16 concurrent / 1,000 total — pending re-verification via Phase 1.5), the one-level nesting constraint, the `acceptEdits` permission posture for spawned agents, and the workflow trigger surface (the word `workflow`; `/effort ultracode`) are documented in [dynamic-workflows.md](dynamic-workflows.md) §2 and §9; both trace to the sources listed at the end of that file (accessed 2026-06-10). This section adds only the Phase-2-specific bindings, which are skill-internal methodology.
 
 ## Step 2A — Topic Identification & Draft Deconstruction
 

@@ -30,7 +30,7 @@ All sections below are **Required** unless explicitly marked **Optional** in the
 
 ## Context
 
-[The minimum context the executor needs to do the work. Source data references, prior decisions, audience definition, domain constraints. Spell out implicit assumptions — Opus 4.8 reads literally and will not infer omitted context.]
+[The minimum context the executor needs to do the work. Source data references, prior decisions, audience definition, domain constraints. Spell out implicit assumptions — Fable 5 reads literally and will not infer omitted context.]
 
 ## Requirements
 
@@ -66,25 +66,25 @@ Address the following sub-topics. Present multiple perspectives where they disag
 ````
 <environment>
 - Subscription tier: Claude Max 20x (no rate / token-budget constraints)
-- Context: Full available window (1M on Opus 4.8)
-- Model: claude-opus-4-8
-- Adaptive thinking: enabled (orchestrator + every workflow agent)
+- Context: Full available window (1M public API on Fable 5; 10M effective via compaction for long-agentic-browse)
+- Model: claude-fable-5
+- Adaptive thinking: enabled (orchestrator + every workflow agent) — thinking-only model
 - Tool selection: adaptive — no manual allowlist; instruct tools where the task obviously requires them
 </environment>
 
 <deployment_config>
-- Model: claude-opus-4-8
-- Thinking: {type: "adaptive"}
-- Effort: high (default on 4.8) — set xhigh explicitly for coding/agentic; max for frontier
+- Model: claude-fable-5
+- Thinking: {type: "adaptive"}  # thinking-only; no thinking-off mode on Fable / Mythos 5
+- Effort: xhigh (skill default for coding/agentic/analytical/orchestration) — set max for genuinely frontier reasoning; high for cost-sensitive production. Effort saturates by task class — surface the rationale (anti-pattern row 49).
 - Output config: {format: <schema if structured outputs needed>, task_budget: <token cap if used>}
-- Max tokens: 64000 (or higher for long-document synthesis; re-baseline for the new tokenizer)
-- Context: full available (1M on Opus 4.8 — GA, no beta header)
+- Max tokens: 64000 (or higher for long-document synthesis)
+- Context: full available (1M public API on Fable 5; 10M effective via compaction for long-agentic-browse; explicit no-compaction for single-pass deep research)
 - Streaming: <enabled / disabled per UX>; if streaming reasoning, set thinking.display = "summarized"
-- Beta headers: task-budgets-2026-03-13 if task budgets used; output-300k-2026-03-24 if Batches API
-- Sampling parameters: omitted (non-default temperature / top_p / top_k return 400 on Opus 4.8)
-- Mid-conversation system messages (optional): enable role:"system" turns after a user turn for long agentic loops — updates instructions without restating the system prompt and preserves cache (4.8 only; 4.7 rejects 400)
-- Fast mode (optional): speed:"fast" (API research preview) — up to 2.5x output tok/sec at premium pricing; latency-for-cost only, not for intelligence-sensitive work
-- Stop reasons to handle: refusal, model_context_window_exceeded, end_turn, max_tokens, tool_use
+- Beta headers: task-budgets-2026-03-13 if task budgets used; output-300k-2026-03-24 if Batches API (pending re-verification — Phase 1.5)
+- Sampling parameters: omitted (non-default temperature / top_p / top_k return 400 on Fable 5)
+- Mid-conversation system messages (optional): enable role:"system" turns after a user turn for long agentic loops — updates instructions without restating the system prompt and preserves cache (Opus 4.8 carryforward, exercised on Fable 5)
+- Fallback handling (Meta-Rule 16): read the structured refusal category AND the fallback-model field from the response object (supersedes stop_details). Opt in to server-side fallback if needed. Document expected fallback rate for sensitive domains.
+- Stop reasons to handle: refusal (with structured category), model_context_window_exceeded, end_turn, max_tokens, tool_use
 </deployment_config>
 ````
 
@@ -118,24 +118,27 @@ Refer to Section 10 for the per-element guidance and the authoring notes.
 ````
 <environment>
 - Subscription tier: Claude Max 20x
-- Deployment target: Claude Code (dynamic workflows; CLI/Desktop/IDE), v2.1.154+
-- Context: 1M Opus
-- Model: claude-opus-4-8
-- Adaptive thinking: enabled for orchestrator AND every workflow agent
+- Deployment target: Claude Code (dynamic workflows; CLI/Desktop/IDE), v2.1.154+ (pending re-verification — Phase 1.5)
+- Context: 1M public API on Fable 5; 10M effective via compaction for long-agentic-browse
+- Model: claude-fable-5
+- Adaptive thinking: enabled for orchestrator AND every workflow agent (thinking-only model)
 - Tool selection: adaptive — orchestrator script dispatches lanes deterministically via `parallel()` / `pipeline()` (fallback: Agent / Task tool where the runtime is unavailable)
 </environment>
 
 <deployment_config>
-- Orchestrator model: claude-opus-4-8
-- Workflow-agent model: claude-opus-4-8[1m]  via  CLAUDE_CODE_SUBAGENT_MODEL=claude-opus-4-8[1m]
-- Effort: default high on 4.8; set xhigh via /effort or --effort xhigh (or /effort ultracode for xhigh + auto workflow orchestration)
-- Adaptive thinking: on by default in Claude Code; verify in /effort or /model
+- Orchestrator model: claude-fable-5
+- Workflow-agent model: claude-fable-5[1m]  via  CLAUDE_CODE_SUBAGENT_MODEL=claude-fable-5[1m]
+- Effort: skill default xhigh for coding/agentic/orchestration; max for genuinely frontier reasoning; high for cost-sensitive. Surface a one-line rationale (row 49). Set via /effort or --effort xhigh (or /effort ultracode for xhigh + auto workflow orchestration).
+- Adaptive thinking: thinking-only; verify in /effort or /model
+- Harness pattern: <blocking orchestrator+subagents | fixed-agent peer team (Send/Wait, Git-as-shared-state) | async lead-spawns-long-lived-subagents (create/delete/check-status)> — prefer non-blocking; document the choice (Meta-Rule 17)
 - Permission mode: <auto / default for research-only runs; verify writes are authorized for deliverable-producing runs>
 - Hooks: <none, or list>
 - Workflow agent definitions location: <inline in CLAUDE.md, or .claude/agents/ files, or --agents JSON>
-- Workflow fan-out: ~6 analytical lanes (synthesis bandwidth recommendation); runtime caps 16/1000
-- Workflow caps: ≤16 concurrent agents, ≤1,000 total per run
-- Workflow status: research preview; spawned agents run `acceptEdits` (file edits auto-approved) — guardrails matter more here, since 4.8 is somewhat less robust to prompt injection than 4.7
+- Workflow fan-out: ~6 analytical lanes (synthesis bandwidth recommendation); runtime caps 16/1000 (pending re-verification — Phase 1.5)
+- Workflow caps: ≤16 concurrent agents, ≤1,000 total per run (pending re-verification — Phase 1.5)
+- Compaction policy: orchestrator-harness profile triggers compaction at 100K; long-agentic-browse profile triggers at 200K to enable 10M effective budgets; single-pass deep research (DRACO, DeepSearchQA) explicitly NO compaction
+- Workflow status: research preview; spawned agents run `acceptEdits` (file edits auto-approved) — guardrails matter more here, since Fable 5 destructive actions have larger blast radius (shared databases vs local code)
+- Fallback handling (Meta-Rule 16): structured refusal category + opt-in fallback-model field in response object
 </deployment_config>
 ````
 
@@ -175,7 +178,7 @@ Full version of the permissible / not-permissible table sketched in `SKILL.md` P
 
 ## Cross-references
 
-- See [opus-4-8-config.md](opus-4-8-config.md) for what goes in `<deployment_config>` and why.
+- See [fable-5-config.md](fable-5-config.md) for what goes in `<deployment_config>` and why.
 - See [dynamic-workflows.md](dynamic-workflows.md) Section 10 for the dynamic-workflow orchestrator `CLAUDE.md` body template.
 - See [task-heuristics.md](task-heuristics.md) for task-type-specific enhancements to apply within each template.
 - See `SKILL.md` Phase 4 for the embedding-landscape-without-bias decision tree.

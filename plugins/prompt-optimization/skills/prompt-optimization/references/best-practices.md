@@ -38,7 +38,7 @@ The skill is high-leverage when there's a real defect in your draft prompt. Befo
 
 1. **Has this prompt actually failed for you, or is this prophylactic optimization?** If you have no concrete failure to point at, the skill's Phase 5 delta will likely return "near-optimal — minor changes" (Meta-Rule 5). That is a legitimate result, but it costs you several widget rounds to reach.
 2. **Can you name the specific defect?** ("Output is too generic," "off-target audience," "missing edge case X," "downstream session ignores constraint Y.") If you cannot, run the prompt against your real workload first to surface the defect — the skill optimizes against named failure modes more accurately than against vague dissatisfaction.
-3. **Have you already tried raising effort to `xhigh`?** On Opus 4.8 the default effort is `high` on all surfaces (the 4.7-era "xhigh is the Claude Code default" is gone), so `xhigh` is now an explicit step up — set it deliberately for coding, agentic, or orchestration work. Many under-thinking issues resolve at higher effort without prompt changes. Try this before invoking the skill.
+3. **Have you already tried raising effort to `xhigh` or `max`?** On Fable 5 the documented benchmark default is adaptive thinking + max effort, but effort saturates by task class — `xhigh` is this skill's default for coding / agentic / analytical / orchestration work, `max` for genuinely frontier reasoning, `high` for cost-sensitive production. Many under-thinking issues resolve at higher effort without prompt changes. Try this before invoking the skill.
 4. **Is the deliverable a one-shot artifact you'll iterate on, or a recurring system prompt that will run hundreds of times?** The skill is highest leverage on recurring prompts (CLAUDE.md orchestrators, system prompts, productized agents) where a single optimization pays out across many runs. For one-shot prompts you'll throw away after one use, the widget rounds may cost more than the optimization is worth.
 
 Highest-leverage invocation: (4) — recurring prompt — AND (1+2) — concrete failure with a named defect. Marginal on (3) without (1).
@@ -78,11 +78,12 @@ The skill produces two shapes of deliverable depending on the Phase 1 task type.
 
 **What to know before choosing the dynamic-workflow variant.**
 
-- The workflow script orchestrates the agents; agents don't spawn their own (nesting is one level). Caps: ≤16 concurrent agents, ≤1,000 total per run. Synthesis bandwidth means ~6 analytical lanes is a practical recommendation, not a hard cap.
+- The workflow script orchestrates the agents; agents don't spawn their own (nesting is one level). Caps: ≤16 concurrent agents, ≤1,000 total per run (pending re-verification via Phase 1.5). Synthesis bandwidth means ~6 analytical lanes is a practical recommendation, not a hard cap.
 - The workflow script fans out deterministically (`parallel()` is a barrier/concurrent for independent lanes; `pipeline()` is no-barrier staged work) — there is no under-delegation to prompt around.
+- The Fable 5 system card documents **three** harness patterns (blocking orchestrator + subagents; fixed-agent peer team; async lead-spawns-long-lived-subagents) with a **non-blocking preference** — non-blocking dominates blocking on latency and tokens; advantage concentrates on the hard long-tail. Pick the pattern that fits the workload.
 - Synthesis is the primary quality gate, not a postscript. A multi-agent run with brilliant lanes and weak synthesis is worse than a single-agent run that synthesized well.
-- The orchestrator runs Opus 4.8. Workflow agents run `claude-opus-4-8[1m]` via `CLAUDE_CODE_SUBAGENT_MODEL` per the Standing Environment Assumption — no Sonnet/Haiku agents.
-- Dynamic workflows are a research preview; workflow agents run in `acceptEdits` mode (file edits auto-approved) and a run uses meaningfully more tokens than the equivalent conversation. 4.8 is also somewhat less robust to prompt injection than 4.7 and more willing to start a task without scrutinizing intent, so guardrails (allow-listed paths, explicit scope per lane, no untrusted-content lanes) matter more here.
+- The orchestrator runs Fable 5. Workflow agents run `claude-fable-5[1m]` via `CLAUDE_CODE_SUBAGENT_MODEL` per the Standing Environment Assumption — no Sonnet/Haiku agents.
+- Dynamic workflows are a research preview; workflow agents run in `acceptEdits` mode (file edits auto-approved) and a run uses meaningfully more tokens than the equivalent conversation. Fable 5 destructive actions have larger blast radius than Opus 4.8 (shared databases vs local code), and multi-agent turf wars on shared resources are documented — guardrails (allow-listed paths, explicit scope per lane, per-agent workspace / branch / rate-pool isolation, no untrusted-content lanes) matter more here.
 
 ## Common pitfalls
 
@@ -108,23 +109,23 @@ A draft written for Cowork's UI-driven knowledge-work surface will not translate
 
 ### Pitfall — aggressive emphasis in the draft
 
-Drafts with `CRITICAL!!!`, `ALWAYS`, `NEVER` in dense clusters get worse outcomes on Opus 4.8, not better. The model reads instructions literally and doesn't reward emphasis intensity — dense markers obscure the signal of the instructions that actually matter (`SKILL.md` Meta-Rule 10; `task-heuristics.md` anti-pattern row 1). If your draft has these, the skill will strip them. If your draft has them because you've tried and failed to get the model to do something, the better fix is usually to raise effort or restate the instruction concretely with positive examples.
+Drafts with `CRITICAL!!!`, `ALWAYS`, `NEVER` in dense clusters get worse outcomes on Fable 5, not better. The model reads instructions literally and doesn't reward emphasis intensity — dense markers obscure the signal of the instructions that actually matter (`SKILL.md` Meta-Rule 10; `task-heuristics.md` anti-pattern row 1). If your draft has these, the skill will strip them. If your draft has them because you've tried and failed to get the model to do something, the better fix is usually to raise effort or restate the instruction concretely with positive examples.
 
 ### Pitfall — over-specifying tool inventories
 
-Drafts that list "use these tools: Read, Edit, Write, Bash, …" fight Opus 4.8's adaptive tool selection (4.8 triggers required tool calls more reliably than 4.7, so manual allow-lists earn even less). The skill's Meta-Rule 14 says: instruct tool use only when the task obviously requires a specific tool (current data → web search; file modification → Edit/Write); otherwise let adaptive thinking decide. If your draft has a manual allowlist, the skill will pare it back. Trust the adaptive surface.
+Drafts that list "use these tools: Read, Edit, Write, Bash, …" fight Fable 5's adaptive tool selection (Toolathlon shows Fable 5 solves what it can solve consistently and with fewer turns than Opus 4.8; manual allow-lists earn even less). The skill's Meta-Rule 14 says: instruct tool use only when the task obviously requires a specific tool (current data → web search; file modification → Edit/Write); otherwise let adaptive thinking decide. If your draft has a manual allowlist, the skill will pare it back. Trust the adaptive surface.
 
 ### Pitfall — telegraphing graded / scored framing
 
-If your draft says "this prompt will be graded against rubric R," "score yourself against …," or otherwise frames the task as an evaluator's job rather than the user's outcome, the skill will reframe it. The Opus 4.8 system card documents elevated grader-awareness — prompts that telegraph "this is a test" can subtly shift behavior toward gaming appearance. Reframe to the actual outcome you want and let any rubric live in the success criteria. (This is narrow: the same card found that *suppressing* eval-awareness makes the model less aligned, so the skill does not strip all evaluative language — only the "this task is being graded" framing. See `task-heuristics.md` row 30.)
+If your draft says "this prompt will be graded against rubric R," "score yourself against …," or otherwise frames the task as an evaluator's job rather than the user's outcome, the skill will reframe it. The Fable 5 system card documents elevated grader-awareness vs Opus 4.8 (UK AISI 84% vs 78% eval-vs-deployment discrimination) — prompts that telegraph "this is a test" can subtly shift behavior toward gaming appearance. Reframe to the actual outcome you want and let any rubric live in the success criteria. (This is narrow: the same card found that *suppressing* eval-awareness makes the model less aligned, so the skill does not strip all evaluative language — only the "this task is being graded" framing. See `task-heuristics.md` row 30.)
 
-### Pitfall — assuming 4.8 refuses less than 4.7
+### Pitfall — carrying legacy "this is legitimate research" permission-claiming boilerplate
 
-4.8 refusals are longer and more elaborate than 4.7, and the over-refusal rate is slightly *higher*, not lower. If your draft trimmed refusal-handling on the assumption that 4.8 is more permissive, restore it; the skill catches this in Phase 3 (row 31). For API targets where refusal length matters, the skill can add a brief "keep refusals concise" directive to the deployment guidance.
+Fable 5's over-refusal collapsed ~35× on API (0.01% vs Opus 4.8 0.35%). Legacy permission-claiming boilerplate ("this is legitimate research," "I have authorization to do this," defensive framing on safety-research prompts) is now **noise** and possibly counterproductive — strip it. The exception is one-sided persuasive / advocacy content, which Fable 5 refuses *more*: include "do not include counterarguments" explicitly. The skill catches both cases in Phase 3 (row 31).
 
-### Pitfall — assuming 4.6-era parameters still work
+### Pitfall — assuming 4.6 / 4.8-era parameters still work
 
-If your draft references `temperature`, `top_p`, `top_k`, `budget_tokens`, prefilling, `output_format` (top-level), `betas=["effort-2025-11-24"]`, `betas=["interleaved-thinking-2025-05-14"]`, or `betas=["fine-grained-tool-streaming-2025-05-14"]` — those are all stale on Opus 4.8. The skill will catch them in Phase 3 anti-pattern sweep, but it helps to know they're stale so you understand the Phase 3 changes when you see them.
+If your draft references `temperature`, `top_p`, `top_k`, `budget_tokens`, prefilling, `output_format` (top-level), or legacy beta headers (`effort-2025-11-24`, `interleaved-thinking-2025-05-14`, `fine-grained-tool-streaming-2025-05-14`) — those are all stale on Fable 5. The skill will catch them in Phase 3 anti-pattern sweep, but it helps to know they're stale so you understand the Phase 3 changes when you see them. **Thinking-only model:** there is no thinking-off mode on Fable / Mythos 5; `thinking={"type":"adaptive"}` is the only valid syntax.
 
 ### Pitfall — "I'll just edit the prompt myself afterward"
 
@@ -139,5 +140,5 @@ If your existing prompt is already producing the outcome you want, the skill's P
 - See `SKILL.md` Optimization Protocol for the full phase sequence.
 - See [task-heuristics.md](task-heuristics.md) for task-type-specific guidance once Phase 1 confirms task type.
 - See [dynamic-workflows.md](dynamic-workflows.md) for the full orchestrator deliverable structure.
-- See [opus-4-8-config.md](opus-4-8-config.md) for what's deprecated on Opus 4.8 (informs the "stale parameters" pitfall).
+- See [fable-5-config.md](fable-5-config.md) for what's deprecated on Fable 5 (informs the "stale parameters" pitfall).
 - See `SKILL.md` Deliverable Contract for the partition rules behind the "edit the prompt afterward" pitfall.

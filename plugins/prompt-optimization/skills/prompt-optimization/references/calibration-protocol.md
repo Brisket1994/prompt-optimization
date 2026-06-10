@@ -1,12 +1,12 @@
 # Phase 1.5 Calibration Protocol
 
-> **Calibration stamp:** Source-currency stance verified against authoritative Anthropic documentation on **2026-05-28**. The query templates here use `[current year]` / `[current month]` as runtime placeholders — substitute the live session date when running them.
+> **Calibration stamp:** Source-currency stance verified against the **Claude Fable 5 / Mythos 5 System Card (2026-06-09)** on **2026-06-10**. The query templates here use `[current year]` / `[current month]` as runtime placeholders — substitute the live session date when running them.
 
 This reference is the operational manual for Phase 1.5. `SKILL.md` Step 1.5B specifies four mandatory queries plus a conditional Query 5; this file expands each into a runnable form, defines the source trust hierarchy that arbitrates conflicts, specifies the delta artifact's structure, gates integration into Phase 4, and prescribes the fallback chain when research fails.
 
 ## Why this phase exists
 
-Anthropic ships model updates, new API features, and revised documentation on a rolling basis. The Opus 4.8 behavioral baseline elsewhere in this skill is a snapshot — it can be stale within weeks of any release. Phase 1.5 is the skill's defense against producing a prompt that reflects last month's API. Skipping it because the baseline "looks current" is the failure mode this phase exists to prevent.
+Anthropic ships model updates, new API features, and revised documentation on a rolling basis. The Fable 5 behavioral baseline elsewhere in this skill is a snapshot — it can be stale within weeks of any release. Phase 1.5 is the skill's defense against producing a prompt that reflects last month's API. Skipping it because the baseline "looks current" is the failure mode this phase exists to prevent.
 
 ## Year-Token Runtime Substitution
 
@@ -17,7 +17,7 @@ Wherever this file shows `[current year]`, `[current month]`, or `[current date]
 ### Query 1 (mandatory) — Platform-specific recent guidance
 
 ```
-Claude Opus 4.8 [deployment target] best practices [current year]
+Claude Fable 5 [deployment target] best practices [current year]
 ```
 
 Substitute `[deployment target]` with the value confirmed in Phase 1: `API`, `Claude Code CLI`, `Cowork (Desktop)`, or `claude.ai (chat)`. Purpose: surface the most recent platform-scoped guidance, including any prompting changes Anthropic has published since the skill was last calibrated.
@@ -33,18 +33,22 @@ Anthropic prompt engineering [task type] [feature mentioned in draft]
 ### Query 3 (mandatory) — Deployment-target configuration
 
 ```
-Claude Opus 4.8 [deployment target] configuration
+Claude Fable 5 [deployment target] configuration
 ```
 
-Purpose: confirm the deployment target's setup specifics — required headers, env vars (`CLAUDE_CODE_SUBAGENT_MODEL` for orchestrated research, `ANTHROPIC_DEFAULT_OPUS_MODEL` for pinned deployments), permission modes, output paths, file-write defaults.
+Purpose: confirm the deployment target's setup specifics — required headers, env vars (`CLAUDE_CODE_SUBAGENT_MODEL` for orchestrated research, model-pinning env vars for pinned deployments), permission modes, output paths, file-write defaults.
 
 ### Query 4 (mandatory) — Model-card capabilities + flagship currency
 
 ```
-Anthropic Claude flagship Opus model card [current year]
+Anthropic Claude flagship model card [current year]
 ```
 
-Purpose: catch capability drift (context window, output ceiling, knowledge cutoff, tokenizer changes, newly deprecated parameters) AND confirm whether the model identifier named in the skill (`claude-opus-4-8` at the calibration-stamp date) is still the current flagship. The model card is the canonical source for the Critical Behaviors table in `opus-4-8-config.md`, and the **system card** is the canonical source for the behavioral findings in `opus-4-8-system-card.md` (controlled-diligence-eval numbers, §2.3.3 failure modes, eval/grader-awareness rates, refusal calibration, agentic-safety regressions, capability/regression context). If Query 4 surfaces revised *numbers* for any of these, file the finding under **NEW / UPDATED PRACTICES** and update `opus-4-8-system-card.md` — not the anti-pattern rows in `task-heuristics.md`, which hold prompt-actionable behavioral conclusions that are more stable than the underlying numbers. If the search surfaces a *newer* flagship model card (e.g., a successor to Opus 4.8), file the finding as a **NEW / UPDATED PRACTICES** delta item with Confidence: High and the action "model-version substitution required per `SKILL.md` § Model-Version Runtime Substitution — apply the new flagship across the optimized prompt's deployment configuration." If the named flagship is still current, file the result under **NO-CHANGE CONFIRMATIONS** attesting that the runtime model identifier is current — no substitution fires.
+Purpose: catch capability drift (context window, output ceiling, knowledge cutoff, tokenizer changes, newly deprecated parameters) AND confirm whether the model identifier named in the skill (`claude-fable-5` at the calibration-stamp date) is still the current flagship. **The brand line is no longer assumed to be "Opus"** — the Fable / Mythos transition demonstrates that flagship names can change across model generations, so Query 4 drops the "Opus" qualifier and searches for the **current flagship** under whatever name Anthropic ships.
+
+**Two-tier architecture detection clause.** If Query 4 surfaces a new frontier + safeguarded-variant split (analogous to the Mythos 5 / Fable 5 architecture), file as **NEW / UPDATED PRACTICES** requiring (a) deployment-config model-ID substitution per `SKILL.md` § Model-Version Runtime Substitution, AND (b) harness-side fallback handling per `SKILL.md` Meta-Rule 16 (structured refusal category + opt-in fallback model field).
+
+The model card is the canonical source for the Critical Behaviors table in `fable-5-config.md`, and the **system card** is the canonical source for the behavioral findings in `fable-5-system-card.md` (the six-pattern long-horizon failure taxonomy, eval/grader-awareness, refusal calibration, agentic-safety mixed picture, capability/regression context). If Query 4 surfaces revised *numbers* for any of these, file the finding under **NEW / UPDATED PRACTICES** and update `fable-5-system-card.md` — not the anti-pattern rows in `task-heuristics.md`, which hold prompt-actionable behavioral conclusions that are more stable than the underlying numbers. If the search surfaces a *newer* flagship model card (e.g., a successor to Fable 5 / Mythos 5), file the finding as a **NEW / UPDATED PRACTICES** delta item with Confidence: High and the action "model-version substitution required per `SKILL.md` § Model-Version Runtime Substitution — apply the new flagship across the optimized prompt's deployment configuration." If the named flagship is still current, file the result under **NO-CHANGE CONFIRMATIONS** attesting that the runtime model identifier is current — no substitution fires.
 
 ### Query 5 (conditional) — Surface-area sweep
 
@@ -52,7 +56,9 @@ Fire Query 5 when **any** of:
 
 - (a) the draft references a feature **not** surfaced by Queries 1–4 (e.g., MCP, Files API, Batch API, custom tools, prompt caching, Skills, Cowork, Managed Agents, task budgets);
 - (b) the baseline appears stale — Queries 1–4 cite docs more than **30 days** older than the session date;
-- (c) Queries 1–4 surface a model retirement notice or deprecation announcement.
+- (c) Queries 1–4 surface a model retirement notice or deprecation announcement;
+- (d) the draft is a **multi-agent or dynamic-workflow** draft — re-verify the harness docs (three patterns, caps, `acceptEdits` mode, non-blocking primitives);
+- (e) the draft uses **browser-use or computer-use** surfaces — re-verify safeguard-version notes (Fable 5 browser-use legacy vs updated safeguards differ materially; row 35).
 
 Form:
 
@@ -171,17 +177,17 @@ Draft: orchestrator for a diligence-brief workflow on the Claude Code CLI; the d
 **Queries fired:**
 
 ```
-Q1: Claude Opus 4.8 Claude Code CLI best practices 2026
+Q1: Claude Fable 5 Claude Code CLI best practices 2026
 Q2: Anthropic prompt engineering orchestrated research prompt caching
-Q3: Claude Opus 4.8 Claude Code CLI configuration
-Q4: Anthropic Claude flagship Opus model card 2026
-Q5 (conditional — fired because draft names "prompt caching"): Anthropic prompt caching Claude Code CLI 2026
+Q3: Claude Fable 5 Claude Code CLI configuration
+Q4: Anthropic Claude flagship model card 2026
+Q5 (conditional — fired because draft names "prompt caching" AND is a dynamic-workflow draft per trigger d): Anthropic prompt caching Claude Code CLI 2026; Anthropic dynamic workflows Claude Code 2026
 ```
 
 **Resulting delta — no-drift case** (the common case; demonstrates that the broadened Query 4 produces a NO-CHANGE confirmation when the flagship is current):
 
 ```
-PHASE 1.5 CURRENT PRACTICES DELTA — accessed 2026-05-28
+PHASE 1.5 CURRENT PRACTICES DELTA — accessed 2026-06-10
 
 NEW / UPDATED PRACTICES
 - (none surfaced)
@@ -189,16 +195,16 @@ NEW / UPDATED PRACTICES
 PLATFORM-SPECIFIC CONSIDERATIONS
 - CLAUDE_CODE_SUBAGENT_MODEL env var precedence (top precedence over per-invocation and per-subagent frontmatter)
   - Source: https://docs.claude.com/en/docs/claude-code/sub-agents (Tier 1) | Confidence: High | Affects: scope-changing
-- Prompt-caching 5-minute TTL for Claude Code CLI sessions (informs workflow-agent prompt stability)
-  - Source: https://docs.claude.com/en/docs/claude-code/prompt-caching (Tier 1) | Confidence: High | Affects: content-changing
+- Prompt-caching 5-minute TTL for Claude Code CLI sessions (informs workflow-agent prompt stability) — pending re-verification (Phase 1.5)
+  - Source: https://docs.claude.com/en/docs/claude-code/prompt-caching (Tier 1) | Confidence: Medium | Affects: content-changing
 
 DEPRECATED / SUPERSEDED PATTERNS
 - (none surfaced)
 
 NO-CHANGE CONFIRMATIONS
-- Flagship currency confirmed: claude-opus-4-8 is still the named current flagship; no model-version substitution required (Query 4 broadened, no-drift case)
+- Flagship currency confirmed: claude-fable-5 is still the named current flagship; no model-version substitution required (Query 4 broadened, no-drift case)
   - Source: https://docs.anthropic.com/en/docs/about-claude/models (Tier 1) | Confidence: High
-- Default effort on Opus 4.8 is `high` across all surfaces (Claude API and Claude Code); set `xhigh` explicitly for coding/agentic/orchestration work (the 4.7-era "xhigh is the Claude Code default" no longer applies)
+- Effort doctrine on Fable 5: documented benchmark default is adaptive thinking + max effort; effort saturates by task class. Skill sets `xhigh` explicitly for coding/agentic/orchestration work, `max` for genuinely frontier reasoning, `high` for cost-sensitive production (`fable-5-config.md` § Effort levels)
   - Source: https://docs.claude.com/en/docs/claude-code/model-config (Tier 1) | Confidence: High
 ```
 
@@ -206,4 +212,4 @@ The Phase 6A QC summary's Phase 1.5 row reads PASS: calibration current, model-v
 
 ## Sources
 
-The query set, source-trust hierarchy, and delta structure are derived from [opus-4-8-config.md](opus-4-8-config.md)'s configuration sweep (accessed 2026-05-28) and from `SKILL.md` Step 1.5B's own specification. The fallback chain reflects observed Anthropic doc-host migrations (`docs.anthropic.com` → `platform.claude.com`, `docs.claude.com` → `code.claude.com`) as of 2026-05-28.
+The query set, source-trust hierarchy, and delta structure are derived from [fable-5-config.md](fable-5-config.md)'s configuration sweep (accessed 2026-06-10) and from `SKILL.md` Step 1.5B's own specification. The fallback chain reflects observed Anthropic doc-host migrations (`docs.anthropic.com` → `platform.claude.com`, `docs.claude.com` → `code.claude.com`) as of 2026-06-10.

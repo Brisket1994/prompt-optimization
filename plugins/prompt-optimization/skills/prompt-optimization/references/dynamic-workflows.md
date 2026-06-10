@@ -1,8 +1,8 @@
 # Dynamic Workflows — Complete Operational Guide
 
-> **Calibration stamp:** Product facts in this reference (workflow runtime, caps, triggers, research-preview status, version gate) verified against authoritative Anthropic documentation on **2026-05-28**. The authoring-API surface is grounded in the live Claude Code workflow runtime and cross-checked against the public docs' constraints; Anthropic does not yet publish the JavaScript function reference, so re-verify both on every skill run via Phase 1.5.
+> **Calibration stamp:** Product facts in this reference (workflow runtime, caps, triggers, research-preview status, version gate) re-verified against the **Claude Fable 5 / Mythos 5 System Card (2026-06-09)** on **2026-06-10**. The 16-concurrent / 1,000-total caps and the `acceptEdits` mode are carried forward from the Opus 4.8-era docs and tagged "pending re-verification (Phase 1.5)". The authoring-API surface is grounded in the live Claude Code workflow runtime and cross-checked against the public docs' constraints; Anthropic does not yet publish the JavaScript function reference, so re-verify both on every skill run via Phase 1.5.
 
-This reference is the full operational manual for the `orchestrated-research` task type. On Opus 4.8 the deliverable is **a `CLAUDE.md` that orchestrates a Claude Code *dynamic workflow*** — a JavaScript orchestration script Claude authors and a runtime executes. It covers when dynamic workflows apply, the runtime model, the authoring API, how decomposition maps onto workflow primitives, the verify-and-converge quality stage, synthesis, the caps/cost/safety envelope, the load-bearing deliverable template (**Section 10**), and the failure-mode catalog. `SKILL.md` Phase 4 cites **Section 10** by number — that section's heading and number are load-bearing; do not move them.
+This reference is the full operational manual for the `orchestrated-research` task type. On Fable 5 the deliverable is **a `CLAUDE.md` that orchestrates a Claude Code *dynamic workflow*** — a JavaScript orchestration script Claude authors and a runtime executes. It covers when dynamic workflows apply, the runtime model, the authoring API, how decomposition maps onto workflow primitives, the verify-and-converge quality stage, synthesis, the caps/cost/safety envelope, the load-bearing deliverable template (**Section 10**), and the failure-mode catalog. `SKILL.md` Phase 4 cites **Section 10** by number — that section's heading and number are load-bearing; do not move them.
 
 ## Table of contents
 
@@ -30,13 +30,14 @@ A dynamic workflow applies when:
 
 It does not apply when the task is small enough to do in one pass, is genuinely sequential with no parallel branches, or targets claude.ai chat (no workflow runtime).
 
-### What Opus 4.8 + dynamic workflows change vs. the 4.7 subagent model
+### What Fable 5 + dynamic workflows change vs. the 4.7 subagent model
 
 The previous design rested on a behavioral premise: *"Opus under-delegates by default, so the orchestrator `CLAUDE.md` must explicitly instruct subagent dispatch via the `Agent`/`Task` tool, and the model decides turn-by-turn whether to spawn."* **Dynamic workflows make that premise obsolete.**
 
 1. **The script decides what runs next — not the model, turn by turn.** Claude writes a JavaScript orchestration script; a runtime executes it deterministically. Fan-out is no longer something you coax the model into; it is `parallel([...])` in code. The "orchestrator under-delegation" failure mode is solved *structurally*, not by prompting harder.
 2. **Intermediate results live in script variables, not the model's context.** The runtime is isolated from the conversation; only the final answer returns to the session. Context isolation is automatic.
 3. **The quality idiom is built into the script.** Independent agents address a problem from different angles, other agents try to refute the findings, and the run iterates until answers converge — the verify-and-converge pattern (Section 8).
+4. **Three harness patterns documented; non-blocking dominates.** The Fable 5 card explicitly documents three patterns (blocking orchestrator + subagents; fixed-agent peer team with Send Message / Wait for Message; async lead-spawns-long-lived-subagents with create / delete / check-status primitives). Non-blocking dominates blocking on latency AND tokens; advantage concentrates on the hard long-tail (~1.6× median speedup; ~0.8× on the easy bucket — overhead can erase the gain). See `SKILL.md` Meta-Rule 17 and [fable-5-system-card.md](fable-5-system-card.md) §10.
 
 When the Phase 0 Step 0C sniff (`inference-heuristics.md`) surfaces orchestration signals, Phase 1's Widget Call 1 leads with `orchestrated-research` as the task type — the user confirms before Phase 2.
 
@@ -46,14 +47,14 @@ A dynamic workflow is **a JavaScript script that orchestrates subagents at scale
 
 | Property | Value |
 |----------|-------|
-| **Status / gate** | Research preview. **Claude Code v2.1.154 or later.** All paid plans (Pro must enable it in `/config`) + Anthropic API access, Amazon Bedrock, Google Cloud Vertex AI, Microsoft Foundry. |
+| **Status / gate** | Research preview. **Claude Code v2.1.154 or later** (pending re-verification — Phase 1.5). All paid plans (Pro must enable it in `/config`) + Anthropic API access, Amazon Bedrock, Google Cloud Vertex AI, Microsoft Foundry. |
 | **Surfaces** | CLI, Desktop app, IDE extensions, non-interactive `claude -p`, Agent SDK. |
-| **Concurrency cap** | Up to **16 concurrent agents** (fewer on machines with limited CPU cores). |
-| **Total cap** | **1,000 agents per run** (runaway-loop backstop). |
+| **Concurrency cap** | Up to **16 concurrent agents** (fewer on machines with limited CPU cores) — pending re-verification (Phase 1.5). |
+| **Total cap** | **1,000 agents per run** (runaway-loop backstop) — pending re-verification (Phase 1.5). |
 | **Script sandbox** | The script itself has **no direct filesystem or shell access** — only the agents it spawns read, write, and run commands. |
-| **Spawned-agent permissions** | Agents always run in **`acceptEdits`** mode and inherit the session's tool allowlist, regardless of the session's permission mode. File edits are auto-approved; non-allowlisted shell/web/MCP calls can still prompt mid-run. |
+| **Spawned-agent permissions** | Agents always run in **`acceptEdits`** mode and inherit the session's tool allowlist, regardless of the session's permission mode. File edits are auto-approved; non-allowlisted shell/web/MCP calls can still prompt mid-run. (Pending re-verification — Phase 1.5.) |
 | **User input** | **No mid-run user input.** Only agent permission prompts can pause a run. For human sign-off between stages, split into separate workflows. |
-| **Model** | Every agent uses the session model unless the script routes a stage elsewhere (per-agent `model` override). |
+| **Model** | Every agent uses the session model (`claude-fable-5`) unless the script routes a stage elsewhere (per-agent `model` override). |
 | **Resume / rerun** | Resumable within the same session (completed agents return cached results; the rest run live). Save a run's script as a `/<name>` command in `.claude/workflows/` (project) or `~/.claude/workflows/` (user). |
 | **Triggers** | the literal word **`workflow`** in a prompt; **`/effort ultracode`** (xhigh + automatic workflow orchestration per substantive task); a saved/bundled command (e.g. `/deep-research`). |
 | **Disable** | `/config` toggle, `"disableWorkflows": true` in settings, or `CLAUDE_CODE_DISABLE_WORKFLOWS=1`. |
@@ -100,7 +101,7 @@ Each agent runs in its own context with its own prompt and tool surface; the scr
 - **Specify structure, not just length** — a JSON Schema is the strongest form of this.
 - **Demand citations.** Every factual claim an agent emits carries a resolvable URL.
 - **Allow refusal-shaped output.** "If you cannot close your lane in budget, return what you have and list what remains" — agents that bluff completeness corrupt synthesis.
-- **Isolate the deliverable with `<result>` tags.** Anthropic's deep-research harness instructs the model to enclose its final report in `<result>` tags and grades only that span, isolating the deliverable from the intermediate tool transcript. Wrapping the synthesis reduce step's final artifact (or any lane returning a long artifact) in `<result>` tags keeps it cleanly separable from working notes. ([opus-4-8-system-card.md](opus-4-8-system-card.md) §9.)
+- **Isolate the deliverable with `<result>` tags.** Anthropic's deep-research harness instructs the model to enclose its final report in `<result>` tags and grades only that span, isolating the deliverable from the intermediate tool transcript. Wrapping the synthesis reduce step's final artifact (or any lane returning a long artifact) in `<result>` tags keeps it cleanly separable from working notes. See `task-heuristics.md` row 46 and ([fable-5-system-card.md](fable-5-system-card.md) §10).
 
 ## 7. Synthesis — the primary quality gate
 
@@ -130,13 +131,15 @@ The plugin's bundled `devils-advocate` and `landscape-research` agents (`agents/
 
 These bound any script Claude writes and must be surfaced in the chat run sheet's `<deployment_config>`:
 
-- **Concurrency ≤16** (fewer on low-CPU machines); **≤1,000 agents total per run.**
+- **Concurrency ≤16** (fewer on low-CPU machines); **≤1,000 agents total per run** — both pending re-verification (Phase 1.5).
 - **No mid-run user input** — for human sign-off between stages, structure as separate workflows.
 - **The script has no FS/shell access** — only spawned agents touch files or run commands.
-- **Spawned agents run `acceptEdits`** (file edits auto-approved). Combined with the 4.8 system card's prompt-injection nuance (`opus-4-8-config.md`), this makes reversibility/confirmation guardrails *more* important on write-capable workflows, not less.
-- **Subagent fork-one-directive.** System card §2.3.3 documents that dispatched subagents may exit after a single directive even when they claim to "poll in the background." Express polling or watching as a `budget`-bounded / condition-bounded loop in the script that spawns a fresh agent per iteration — never as a promise a lane keeps running on its own (see §11; [opus-4-8-system-card.md](opus-4-8-system-card.md) §3).
-- **Long-run context compaction.** Anthropic's long-running agentic harnesses trigger context compaction around 100K–200K tokens. For long pipeline stages or deep agentic lanes, validate a compaction trigger against the target workload rather than assuming the default ([opus-4-8-system-card.md](opus-4-8-system-card.md) §9).
-- **Model:** agents use the session model (`claude-opus-4-8`) unless a stage is routed elsewhere; effort default is `high` — set `xhigh` (or run `ultracode`) for coding/agentic depth.
+- **Spawned agents run `acceptEdits`** (file edits auto-approved) — pending re-verification (Phase 1.5). Combined with Fable 5's destructive-action larger-blast-radius (`fable-5-system-card.md` §7), this makes reversibility/confirmation guardrails *more* important on write-capable workflows, not less.
+- **Three harness patterns; prefer non-blocking.** The Fable 5 card documents (1) blocking orchestrator + subagents (orchestrator no task tools, only spawn; subagents 200K context no compaction; orchestrator compacts at 100K); (2) fixed-agent peer team (3 / 5 / 10 peer agents, one designated lead, Send Message / Wait for Message tools, 1M tokens per agent, Git-as-shared-state); (3) async lead-spawns-long-lived-subagents (create / delete / check-status primitives; 1M tokens no compaction). **Non-blocking dominates blocking on latency AND tokens.** Advantage concentrates on the hard long-tail (1.6× median speedup; ~0.8× on easy bucket — overhead can erase the gain). Pick the pattern that fits the workload; document the choice + a one-line rationale in the run sheet. ([fable-5-system-card.md](fable-5-system-card.md) §10; `SKILL.md` Meta-Rule 17; `task-heuristics.md` row 44.)
+- **Isolate per-agent workspaces / files / rate pools.** Multi-agent turf wars and parallel-session force-push are documented (`fable-5-system-card.md` §4; rows 8, 43). One writer at a time on shared state.
+- **Subagent fork-one-directive.** Dispatched subagents may exit after a single directive even when they claim to "poll in the background." Express polling or watching as a `budget`-bounded / condition-bounded loop in the script that spawns a fresh agent per iteration — never as a promise a lane keeps running on its own (see §11; [fable-5-system-card.md](fable-5-system-card.md) §4).
+- **Long-run context compaction policy.** Card-documented profiles: orchestrator harness triggers compaction at **100K**; BrowseComp triggered compaction at **200K** to push to 10M effective budgets; deep-research single passes (DRACO 980K, DeepSearchQA) explicitly **do NOT compact**. Validate the trigger against the target workload rather than assuming the default ([fable-5-system-card.md](fable-5-system-card.md) §10).
+- **Model:** agents use the session model (`claude-fable-5`) unless a stage is routed elsewhere; the skill default is `xhigh` for coding/agentic depth (`max` for genuinely frontier reasoning; `high` for cost-sensitive). See `task-heuristics.md` row 49.
 - **Cost:** a workflow spawns many agents, so a single run uses meaningfully more tokens than the equivalent conversation and counts toward usage and rate limits. The Standing Environment Assumption (no token-budget constraints) authorizes this; still note it for the user.
 - **Resume:** within the same session only — exiting Claude Code mid-run restarts the workflow fresh.
 
@@ -208,7 +211,7 @@ Every claim carries a URL; integrative reasoning is explicitly framed ("Combinin
 ## Runtime notes (chat run sheet, not the deliverable file)
 
 Caps 16 concurrent / 1,000 total; agents run acceptEdits; no mid-run input; session model
-claude-opus-4-8, effort high (set xhigh / ultracode for depth); research preview, Claude Code v2.1.154+.
+claude-fable-5, effort xhigh (skill default; set max for frontier reasoning; ultracode for depth); research preview, Claude Code v2.1.154+ (pending re-verification — Phase 1.5).
 ```
 
 ### Authoring notes
@@ -250,7 +253,7 @@ Reduce step runs the seven synthesis tasks; build the executive-summary-led brie
 Write to diligence-brief-acme.md, leading with the executive summary; every claim carries a URL.
 
 ## Runtime notes (chat run sheet)
-16/1,000 caps; acceptEdits agents; claude-opus-4-8 @ xhigh; research preview, v2.1.154+.
+16/1,000 caps (pending re-verification); acceptEdits agents; claude-fable-5 @ xhigh; research preview, v2.1.154+ (pending re-verification).
 ```
 
 ## 11. Failure mode catalog
@@ -270,18 +273,20 @@ Write to diligence-brief-acme.md, leading with the executive summary; every clai
 | **Source-validation skipped** | Key findings carry no `verified` / `not verified` verdict | Re-fetch every load-bearing URL; never trust the lane's paraphrase. |
 | **Working machinery in the deliverable** | Lane prompts / verify findings / source-validation log appear in the written file | Partition: intermediate results stay in script variables / chat run sheet; the Phase 6B strip check enforces it. |
 | **Embedded conclusions** | Deliverable states positions rather than topics-with-evidence | Phase 2 neutrality discipline; reframe as "address X; present both sides". |
-| **Write-capable workflow with weak guardrails** | Agents run `acceptEdits`; destructive actions auto-approved | On 4.8 (prompt-injection nuance), require explicit confirmation for destructive/irreversible actions and completion-verification on writes. |
-| **Lane promises background polling** | A lane prompt says "poll continuously," "keep monitoring," or "run until the condition flips" without a workflow-level loop | §2.3.3 subagent fork-one-directive — express polling as a `budget`-/condition-bounded loop in the script; instruct one-shot lanes to "return when scope is closed or budget is spent; do not wait for further input." |
-| **Subagent caveat dropped in synthesis** | A lane reports "could not verify; best guess X" and the reduce step relays X as confirmed | §2.3.3 dropped-caveat fabrication — the reduce step preserves lane uncertainty verbatim and treats "could not verify" as a negative result, not a fact to relay (`synthesis-deliverable.md`). |
+| **Write-capable workflow with weak guardrails** | Agents run `acceptEdits`; destructive actions auto-approved | On Fable 5 destructive actions have larger blast radius (shared databases vs local code); require explicit confirmation for destructive/irreversible actions and completion-verification on writes. |
+| **Lane promises background polling** | A lane prompt says "poll continuously," "keep monitoring," or "run until the condition flips" without a workflow-level loop | Subagent fork-one-directive — express polling as a `budget`-/condition-bounded loop in the script; instruct one-shot lanes to "return when scope is closed or budget is spent; do not wait for further input." |
+| **Subagent caveat dropped in synthesis** | A lane reports "could not verify; best guess X" and the reduce step relays X as confirmed | Dropped-caveat fabrication — the reduce step preserves lane uncertainty verbatim and treats "could not verify" as a negative result, not a fact to relay (`synthesis-deliverable.md`). |
+| **Blocking-orchestrator-as-default** | Workflow uses the blocking-orchestrator + subagents pattern when the workload is hard / long-tail | Non-blocking dominates blocking on latency and tokens; advantage concentrates on hard long-tail. Prefer fixed-agent peer team or async lead-spawns-long-lived-subagents. (Row 44.) |
+| **Missing `<result>` isolation** | Final deliverable mixed with intermediate working transcript / tool calls | Wrap the synthesis reduce step's final artifact (and any lane returning a long artifact) in `<result>` tags. (Row 46.) |
 
 ## Sources
 
-Accessed **2026-05-28**:
+Accessed **2026-06-10**:
 
-- [Orchestrate subagents at scale with dynamic workflows — Claude Code Docs](https://code.claude.com/docs/en/workflows) — runtime model, caps (16 concurrent / 1,000 total), triggers, research-preview status, v2.1.154 gate, `/deep-research`, disable controls.
+- [Orchestrate subagents at scale with dynamic workflows — Claude Code Docs](https://code.claude.com/docs/en/workflows) — runtime model, caps (16 concurrent / 1,000 total — pending re-verification via Phase 1.5), triggers, research-preview status, v2.1.154 gate (pending re-verification), `/deep-research`, disable controls.
 - [Introducing dynamic workflows in Claude Code](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code) — design philosophy, verify-and-converge idiom, use cases (codebase audits, large migrations, cross-checked research).
 - [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents) — `agentType` dispatch, subagent definition surface, the one-level nesting constraint.
-- [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — `ultracode`, effort default `high`, `CLAUDE_CODE_SUBAGENT_MODEL`, v2.1.154.
+- [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — `ultracode`, effort ladder, `CLAUDE_CODE_SUBAGENT_MODEL`.
 - Live Claude Code workflow runtime (this session) — the `meta` / `agent` / `parallel` / `pipeline` / `phase` / `budget` authoring surface, cross-checked against the public constraints above.
-- [Claude Opus 4.8 System Card](https://www.anthropic.com/claude-opus-4-8-system-card) — §2.3.3 subagent fork-one-directive and dropped-caveat fabrication (the background-polling and caveat-loss failure modes); §8 multi-agent-harness validation, `<result>`-tag deliverable isolation, and long-run context compaction. Routed through [opus-4-8-system-card.md](opus-4-8-system-card.md).
-- `SKILL.md` Meta-Rule 13 — the orchestrator invariants this reference operationalizes.
+- [Claude Fable 5 / Mythos 5 System Card](https://www.anthropic.com/claude-fable-5-system-card) — §4 subagent fork-one-directive and dropped-caveat fabrication (the background-polling and caveat-loss failure modes); §10 three multi-agent-harness patterns with non-blocking dominance; §10 `<result>`-tag deliverable isolation; §10 long-run context compaction profiles (100K orchestrator / 200K BrowseComp / no-compaction DRACO + DeepSearchQA). Confidence: Medium on exact URL slug. Routed through [fable-5-system-card.md](fable-5-system-card.md).
+- `SKILL.md` Meta-Rule 13 (orchestrator invariants) and Meta-Rule 17 (three-pattern harness selection) — what this reference operationalizes.

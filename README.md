@@ -1,6 +1,6 @@
 # prompt-optimization
 
-A single-plugin [Claude Code](https://code.claude.com/docs/en/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Opus 4.8.
+A single-plugin [Claude Code](https://code.claude.com/docs/en/overview) marketplace hosting the **prompt-optimization** plugin: a phased workflow that turns a draft prompt, system message, `CLAUDE.md`, or multi-agent orchestrator into production-grade instructions for Claude Fable 5 (with fallback-aware deployment guidance for the Fable 5 / Opus 4.8 silent-fallback architecture).
 
 ## Install
 
@@ -36,7 +36,7 @@ claude plugin install prompt-optimization@prompt-optimization
 
 ## What you get
 
-- **Skill — `prompt-optimization`** — auto-triggers when you provide a draft prompt to improve, ask to optimize/harden/refine a prompt, or describe a multi-agent research workflow. Runs a sequential protocol: intent extraction, complexity triage, widget-based clarification, mandatory live calibration against Anthropic documentation, landscape research, draft analysis, prompt construction, delta analysis, and a final QC pass with a clean file write. The draft-analysis anti-pattern sweep is calibrated against both the Opus 4.8 model card and the Opus 4.8 system card. Invoke explicitly with `/prompt-optimization` if the auto-trigger doesn't fire.
+- **Skill — `prompt-optimization`** — auto-triggers when you provide a draft prompt to improve, ask to optimize/harden/refine a prompt, or describe a multi-agent research workflow. Runs a sequential protocol: intent extraction, complexity triage, widget-based clarification, mandatory live calibration against Anthropic documentation, landscape research, draft analysis, prompt construction, delta analysis, and a final QC pass with a clean file write. The draft-analysis anti-pattern sweep is calibrated against the Fable 5 / Mythos 5 system card (six-pattern long-horizon failure taxonomy, fallback semantics, refusal inversion, mixed prompt-injection picture, multi-agent harness patterns). Invoke explicitly with `/prompt-optimization` if the auto-trigger doesn't fire.
 - **Agent — `landscape-research`** — a read-only research worker dispatched as part of the orchestrated Phase 2 (mode 2-O) dynamic workflow — one lane per sub-domain or query-taxonomy cluster — with a parallel-subagent fallback when the workflow runtime is unavailable; results synthesize centrally.
 - **Agent — `devils-advocate`** — a read-only adversarial / confirmatory worker dispatched by the verify-and-converge stage of every orchestrated-research deliverable: adversarial mode for thesis-advancing deliverables, confirmatory mode for purely descriptive inventory / fact-extract deliverables.
 

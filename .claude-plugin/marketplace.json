@@ -3,12 +3,12 @@
   "owner": {
     "name": "Mac Zabriskie"
   },
-  "description": "Single-plugin marketplace hosting the prompt-optimization plugin for Claude Opus 4.8.",
+  "description": "Single-plugin marketplace hosting the prompt-optimization plugin for Claude Fable 5.",
   "plugins": [
     {
       "name": "prompt-optimization",
       "source": "./plugins/prompt-optimization",
-      "description": "Transform draft prompts into production-grade instructions for Claude Opus 4.8, with mandatory live-doc calibration and a Claude Code dynamic-workflow orchestration mode."
+      "description": "Transform draft prompts into production-grade instructions for Claude Fable 5, with mandatory live-doc calibration, a Claude Code dynamic-workflow orchestration mode, and fallback-aware deployment guidance."
     }
   ]
 }

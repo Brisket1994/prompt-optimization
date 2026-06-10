@@ -1,12 +1,12 @@
 # Platform Baseline — Capabilities, Tiers, and Assignment Guidance
 
-> **Calibration stamp:** Platform capability matrix verified against authoritative Anthropic documentation on **2026-05-28**. Re-verify on every skill run via Phase 1.5 Query 3.
+> **Calibration stamp:** Platform capability matrix re-verified against the **Claude Fable 5 / Mythos 5 System Card (2026-06-09)** on **2026-06-10**. Context-split rows (e.g. Microsoft Foundry 200K) and Claude Code minimum-version gates are carried forward and tagged "pending re-verification (Phase 1.5)". Re-verify on every skill run via Phase 1.5 Query 3.
 
 This reference is consulted whenever Phase 1 or Phase 1.5 needs to confirm what the chosen deployment surface can actually do. The capability matrix below is the single source of truth for which platform supports what; the assignment guidance section explains why some task types are wedded to specific platforms (most notably, why orchestrated-research can only run on the Claude Code CLI).
 
 ## Standing Environment Assumptions (canonical home: SKILL.md)
 
-For the full Standing Environment Assumptions (Max 20x, full 1M context, `claude-opus-4-8` everywhere including subagents, adaptive thinking, no cost-driven routing), see `SKILL.md` § Standing Environment Assumptions. This reference's assignment guidance respects those assumptions: recommendations to route subagents to Haiku/Sonnet for cost reasons are **not** permissible. Where this file mentions Haiku or Sonnet at all, it is to document what the platform supports — not to recommend routing the skill's optimized prompts to them.
+For the full Standing Environment Assumptions (Max 20x, full 1M context, `claude-fable-5` everywhere including subagents, adaptive thinking, no cost-driven routing), see `SKILL.md` § Standing Environment Assumptions. This reference's assignment guidance respects those assumptions: recommendations to route subagents to Haiku/Sonnet for cost reasons are **not** permissible. Where this file mentions Haiku or Sonnet at all, it is to document what the platform supports — not to recommend routing the skill's optimized prompts to them.
 
 ## Rows that drive SKILL.md runtime behavior
 
@@ -28,8 +28,8 @@ Rows are capabilities relevant to optimized-prompt construction; columns are the
 | Interactive widgets (`ask_user_input_v0`) | ✗ | ✗ | ✓ | ✓ |
 | Headless `-p` / non-interactive mode | n/a | ✓ (`claude -p`) | ✗ | ✗ |
 | Computer use / browser control | ✓ (server tool, beta scope) | ✓ (via MCP / tool) | ✓ (native, Pro/Max plans) | ✗ |
-| 1M-token context (Opus 4.8) | ✓ (GA, standard pricing) | ✓ (Max/Team/Enterprise auto; alias `opus[1m]` / `claude-opus-4-8[1m]`) | ⚠ (subscription-tier dependent) | n/a |
-| Adaptive thinking | ✓ (must opt in: `thinking:{type:"adaptive"}`) | ✓ (default `high` effort on Opus 4.8) | ✓ | ✓ |
+| 1M-token context (Fable 5) | ✓ (GA, standard pricing; Foundry context split pending re-verification — Phase 1.5) | ✓ (Max/Team/Enterprise auto; alias `claude-fable-5[1m]` — session-verified 2026-06-10) | ⚠ (subscription-tier dependent) | n/a |
+| Adaptive thinking | ✓ (`thinking:{type:"adaptive"}`; thinking-only on Fable / Mythos 5) | ✓ (effort saturates by task class; skill default `xhigh`, max for frontier) | ✓ | ✓ |
 | Custom system prompts | ✓ | ✓ (via `CLAUDE.md`, subagent frontmatter) | ⚠ (skills & persistent memory; less raw control) | ✗ (in product UI) |
 | Plugin / Skill packaging | ✓ (Files API + skill bundle) | ✓ (`.skill` archives, `~/.claude/skills/`) | ✓ | ⚠ (limited surface) |
 | `output_config.format` / structured outputs | ✓ | ✓ (via SDK underneath) | ✓ | ✗ (no direct exposure) |
@@ -73,7 +73,7 @@ Why Claude Code is the only valid target:
 - The skill's orchestrated-research deliverable is a `CLAUDE.md` that orchestrates a Claude Code **dynamic workflow** — a JavaScript orchestration script Claude authors and the workflow runtime executes deterministically (`parallel()` for barrier/concurrent independent lanes; `pipeline()` for staged, no-barrier flow). Dynamic workflows are a Claude Code capability and require **Claude Code v2.1.154 or later** (research preview; Pro users opt in via `/config`).
 - Dynamic workflows are available across Claude Code surfaces: CLI, Desktop app, IDE extensions, non-interactive `claude -p`, and the Agent SDK. Neither claude.ai chat nor Cowork's UI exposes the workflow runtime.
 - The workflow script fans out deterministically — the runtime decides what runs next, not the model turn-by-turn — so the 4.7-era "orchestrator under-delegation" failure mode is structurally absent. Caps: ≤16 concurrent agents, ≤1,000 total per run.
-- `CLAUDE_CODE_SUBAGENT_MODEL` still routes workflow agents (per the standing assumption, every agent runs on Opus 4.8 unless the script sets a per-stage `model` override). The CLI also exposes the file-based subagent definition surface (`.claude/agents/`, `~/.claude/agents/`, `--agents` JSON) and the `CLAUDE_CODE_EFFORT_LEVEL`, `MAX_THINKING_TOKENS`, and related env vars that the deliverable presumes.
+- `CLAUDE_CODE_SUBAGENT_MODEL` still routes workflow agents (per the standing assumption, every agent runs on Fable 5 unless the script sets a per-stage `model` override). The CLI also exposes the file-based subagent definition surface (`.claude/agents/`, `~/.claude/agents/`, `--agents` JSON) and the `CLAUDE_CODE_EFFORT_LEVEL`, `MAX_THINKING_TOKENS`, and related env vars that the deliverable presumes.
 - **Fallback:** where the dynamic-workflow runtime is unavailable (older Claude Code installs, certain managed environments), fall back to parallel subagents dispatched via the `Agent`/`Task` tool — the CLI still ships built-in `Agent`/`Task` dispatch with parallel execution, per-subagent context isolation, and per-subagent permission scoping.
 
 If a user selects orchestrated-research as task type but a non-Claude-Code target as deployment, the follow-up widget reframes: either keep orchestrated-research and route to Claude Code, or change task type to something the chosen surface supports (knowledge work / Cowork-primary; analysis / research running synchronously on chat or API).
@@ -102,7 +102,7 @@ Not the right target for: orchestrated multi-agent research (CLI), pure API inte
 
 The right target when:
 
-- The user is building a product or service around Claude Opus 4.8 directly.
+- The user is building a product or service around Claude Fable 5 directly.
 - Custom dispatch, custom widgets, custom permissioning are needed.
 - Cost or rate behavior must be managed by the harness, not delegated to a Claude UI.
 
@@ -114,13 +114,13 @@ Two of Phase 1.5's four mandatory queries (Query 1 and Query 3) are platform-sco
 
 ## Sources
 
-Accessed 2026-05-28:
+Accessed 2026-06-10 (system card identity Fable 5 / Mythos 5, 2026-06-09):
 
 - [Models overview — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models) — model availability across surfaces and pricing.
 - [Model configuration — Claude Code Docs](https://code.claude.com/docs/en/model-config) — Claude Code aliases, 1M-context routing, env vars including `CLAUDE_CODE_SUBAGENT_MODEL`.
 - [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents) — built-in subagents (Explore / Plan / general-purpose), subagent scopes (`.claude/agents/`, `~/.claude/agents/`, plugins, managed), `--agents` CLI flag.
-- [Dynamic workflows — Claude Code Docs](https://code.claude.com/docs/en/workflows) — workflow runtime, authoring API, caps, triggers, research-preview gating.
+- [Dynamic workflows — Claude Code Docs](https://code.claude.com/docs/en/workflows) — workflow runtime, authoring API, caps (pending re-verification — Phase 1.5), triggers, research-preview gating.
 - [Claude Platform](https://www.anthropic.com/api) — API product surface.
 - [Claude Code by Anthropic](https://www.anthropic.com/claude-code) — CLI product surface.
 - [Claude Cowork](https://www.anthropic.com/product/claude-cowork) — Cowork product surface and tier eligibility.
-- [Migrating to Claude Opus 4.8 — Claude API Docs](https://platform.claude.com/docs/en/about-claude/models/migration-guide#migrating-from-claude-opus-47) — Opus 4.8 migration from 4.7 (no breaking API changes; carries forward Files API, MCP connector, batch, vision, web tools, memory tool).
+- [Claude Fable 5 / Mythos 5 System Card](https://www.anthropic.com/claude-fable-5-system-card) — Fable 5 / Mythos 5 architecture, fallback semantics, capability surfaces. Confidence: Medium on exact URL slug.
